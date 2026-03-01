@@ -1,0 +1,26 @@
+# Nix
+result
+result-*
+
+# macOS
+.DS_Store
+
+# Editor
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Secrets (encrypted files are OK, plaintext is not)
+*.key
+*.pem
+
+# Claude Code session data
+.claude/
+
+# Repomix reference dumps (large, not part of project)
+repomix-*.xml
+
+# Backup files
+*.bak

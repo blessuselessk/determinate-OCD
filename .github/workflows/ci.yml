@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Nix Flake Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Enable Magic Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Run flake check
+        run: nix flake check --print-build-logs
+
+  build:
+    name: Build NixOS System
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Enable Magic Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      # Build the full system closure without deploying.
+      # Uncomment and set hostname when den.hosts is configured:
+      # - name: Build system
+      #   run: nix build .#nixosConfigurations.<hostname>.config.system.build.toplevel --print-build-logs
+
+      - name: Build check placeholder
+        run: echo "System build will be enabled once hosts are configured"
