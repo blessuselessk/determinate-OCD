@@ -44,3 +44,22 @@ When creating or modifying aspects, follow [dendritic instructions](/.github/ins
 | `ocd` | `modules/community/ocd/` | OCD-stack-coupled: OpenClaw wiring, Determinate boot, networking |
 | `<user>` | `modules/<user>/` | Personal: shell, git, editors, desktop, secrets |
 | `<infra>` | `modules/<infra>/` | System: hosts, nix-settings, workstation, state-version |
+
+## Jujutsu (jj) aliases
+
+The `lessuseless.jujutsu` aspect (`modules/lessuseless/jujutsu.nix`) defines these aliases:
+
+| Alias | Expands to | Purpose |
+|-------|-----------|---------|
+| `s` | `jj show` | Show current commit |
+| `l` | `jj log -r compared_to_trunk()` | Log of work-in-progress vs trunk |
+| `ll` | `jj log -r ..` | Full visible history |
+| `lr` | `jj log -r "default() & recent()"` | Recent commits in default set |
+| `sq` | `jj squash -i` | Interactive squash into parent |
+| `su` | `jj squash -i -f @ -t @+` | Interactive squash upward |
+| `sd` | `jj squash -i -f @ -t @-` | Interactive squash downward |
+| `sU` | `jj squash -i -f @+ -t @` | Pull from child into current |
+| `sD` | `jj squash -i -f @- -t @` | Pull from parent into current |
+| `tug` | `jj bookmark move --from closest_bookmark(@-) --to @-` | Advance nearest bookmark to parent |
+
+Custom revset aliases: `trunk()` = `main@origin`, `compared_to_trunk()`, `default()`, `recent()` (last week), `closest_bookmark(to)`.

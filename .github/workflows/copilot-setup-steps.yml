@@ -4,9 +4,7 @@
 # The agent needs Nix available to run `nix flake check` and evaluate aspects.
 # PROSE primitives (.github/instructions/, .github/context/) are automatically
 # discovered by Copilot from the repository structure.
-
 name: "Copilot Setup Steps"
-
 on:
   workflow_dispatch:
   push:
@@ -15,24 +13,18 @@ on:
   pull_request:
     paths:
       - .github/workflows/copilot-setup-steps.yml
-
 jobs:
   # The job MUST be called `copilot-setup-steps` or it will not be picked up by Copilot.
   copilot-setup-steps:
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
-
       - name: Enable Magic Nix Cache
         uses: DeterminateSystems/magic-nix-cache-action@main
-
       - name: Verify Nix
         run: nix --version

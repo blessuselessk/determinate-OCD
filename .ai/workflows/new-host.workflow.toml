@@ -1,0 +1,38 @@
+[workflow]
+id = "new-host"
+description = "Declare a new NixOS host with user bindings and host-specific aspects"
+mode = "agent"
+agent = "nix-aspect-author"
+
+[[workflow.phases]]
+name = "Scope"
+steps = [
+  "Choose a hostname and system architecture (`x86_64-linux`, `aarch64-linux`, `aarch64-darwin`)",
+  "Identify user(s) to bind to the host",
+  "Decide which default includes apply (networking, boot, shell)",
+]
+checkpoint = "Confirm hostname, architecture, and user(s) before proceeding."
+
+[[workflow.phases]]
+name = "Declare"
+steps = [
+  "Add `den.hosts.<system>.<hostname>.users.<user> = { }` to `modules/hosts.nix`",
+  "Create a host aspect in `modules/` with boot, filesystem, and hardware config",
+  "Create or verify user aspect with `den.provides.primary-user` binding",
+]
+
+[[workflow.phases]]
+name = "Wire"
+steps = [
+  "Add the host aspect to `den.default.includes` if it should apply to all hosts",
+  "Configure host-specific overrides in the host aspect (networking, services)",
+  "Wire any secrets the host needs via `includes` dependency on secrets aspect",
+]
+
+[[workflow.phases]]
+name = "Verify"
+steps = [
+  "`jj file track` all new files",
+  "Run `nix flake check` — confirm `nixosConfigurations.<hostname>` appears in outputs",
+  "Review the host declaration: `nix eval .#nixosConfigurations --apply builtins.attrNames`",
+]

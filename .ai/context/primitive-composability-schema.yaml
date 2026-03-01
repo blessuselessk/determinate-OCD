@@ -3,82 +3,72 @@
 # Defines the valid directed edges between PROSE agent primitives.
 # An agent creating or modifying primitives should validate compositions
 # against this schema. If an edge isn't listed here, it's invalid.
-
 primitives:
   agent:
     file_pattern: "*.agent.md"
     tier: active
     description: >
-      Role-based persona with bounded tool access and optional handoffs.
-      The top-level orchestrator in the composition hierarchy.
+      Role-based persona with bounded tool access and optional handoffs. The top-level orchestrator in the composition hierarchy.
+
     frontmatter:
       required: [description]
       optional: [tools, handoffs, model]
-
   instruction:
     file_pattern: "*.instructions.md"
     tier: passive
     description: >
-      Persistent rules scoped by file glob. Automatically injected into
-      agents when working on matching files. Never invokes anything.
+      Persistent rules scoped by file glob. Automatically injected into agents when working on matching files. Never invokes anything.
+
     frontmatter:
       required: [applyTo]
       optional: [description]
-
   prompt:
     file_pattern: "*.prompt.md"
     tier: active
     description: >
-      Reusable phased workflow invoked on demand. The primary orchestrator
-      of execution — activates agents, references knowledge, produces output.
+      Reusable phased workflow invoked on demand. The primary orchestrator of execution — activates agents, references knowledge, produces output.
+
     frontmatter:
       required: [description]
       optional: [mode, agent, model, tools, mcp, input]
-
   context:
     file_pattern: "*.context.md"
     tier: passive
     description: >
-      Reference knowledge loaded on demand via markdown links.
-      Pure data — no outbound edges except to other context files.
+      Reference knowledge loaded on demand via markdown links. Pure data — no outbound edges except to other context files.
+
     frontmatter:
       optional: [description]
-
   memory:
     file_pattern: "*.memory.md"
     tier: passive
     description: >
-      Decision log persisting across sessions. Written to by active
-      primitives after execution. Read on demand. Never invokes anything.
+      Decision log persisting across sessions. Written to by active primitives after execution. Read on demand. Never invokes anything.
+
     frontmatter:
       optional: []
-
   spec:
     file_pattern: "*.spec.md"
     tier: passive
     description: >
-      Implementation-ready blueprint. Consumed by prompts as input,
-      produced by specification workflows as output. Never invokes anything.
+      Implementation-ready blueprint. Consumed by prompts as input, produced by specification workflows as output. Never invokes anything.
+
     frontmatter:
       optional: [description]
-
   skill:
     file_pattern: "SKILL.md"
     tier: meta
     description: >
-      Packaged capability for distribution and auto-discovery. Contains
-      references, scripts, and assets. Agents auto-summon skills based
-      on description match to current task.
+      Packaged capability for distribution and auto-discovery. Contains references, scripts, and assets. Agents auto-summon skills based on description match to current task.
+
     frontmatter:
       required: [name, description]
       optional: [license, allowed-tools, metadata]
-
   agents_md:
     file_pattern: "AGENTS.md"
     tier: meta
     description: >
-      Compiled portable context. Produced by apm compile from instructions,
-      context, and memory. Inherited by agents via directory tree walk.
+      Compiled portable context. Produced by apm compile from instructions, context, and memory. Inherited by agents via directory tree walk.
 
 # ──────────────────────────────────────────────
 # Valid edges
@@ -89,18 +79,15 @@ primitives:
 #   mechanism — how it's expressed
 #   direction — invoke | auto-load | reference | produce
 # ──────────────────────────────────────────────
-
 edges:
   # ── agent outbound ──
-
   - from: agent
     to: agent (other)
     verb: hands-off-to
     mechanism: "handoffs: frontmatter field"
     direction: invoke
     note: >
-      Sequential delegation — agent A completes its phase,
-      passes context to agent B. Not self-referential.
+      Sequential delegation — agent A completes its phase, passes context to agent B. Not self-referential.
 
   - from: agent
     to: agent (other)
@@ -108,145 +95,118 @@ edges:
     mechanism: "agent/runSubagent tool"
     direction: invoke
     note: >
-      Parent-child — agent A creates a scoped subagent
-      for a subtask, receives result back. Concurrent.
+      Parent-child — agent A creates a scoped subagent for a subtask, receives result back. Concurrent.
 
   - from: agent
     to: instruction
     verb: auto-loads
     mechanism: "applyTo glob match on active files"
     direction: auto-load
-
   - from: agent
     to: context
     verb: references
     mechanism: "markdown links in body"
     direction: reference
-
   - from: agent
     to: memory
     verb: reads
     mechanism: "markdown links in body"
     direction: reference
-
   - from: agent
     to: memory
     verb: updates
     mechanism: "writes decisions after significant outcomes"
     direction: produce
-
   - from: agent
     to: skill
     verb: auto-discovers
     mechanism: "description match to current task"
     direction: auto-load
-
   - from: agent
     to: agents_md
     verb: inherits
     mechanism: "directory tree walk, closest file wins"
     direction: auto-load
-
   # ── prompt outbound ──
-
   - from: prompt
     to: agent
     verb: activates
     mechanism: "mode: or agent: frontmatter field"
     direction: invoke
-
   - from: prompt
     to: context
     verb: references
     mechanism: "markdown links in body"
     direction: reference
-
   - from: prompt
     to: memory
     verb: reads
     mechanism: "markdown links in body"
     direction: reference
-
   - from: prompt
     to: memory
     verb: updates
     mechanism: "learning integration phase output"
     direction: produce
-
   - from: prompt
     to: spec
     verb: consumes
     mechanism: "markdown links or ${specFile} parameter"
     direction: reference
-
   - from: prompt
     to: spec
     verb: produces
     mechanism: "specification workflow output"
     direction: produce
-
   - from: prompt
     to: instruction
     verb: references
     mechanism: "markdown links in body"
     direction: reference
-
   - from: prompt
     to: instruction
     verb: updates
     mechanism: "discovery-driven enhancement"
     direction: produce
-
   - from: prompt
     to: prompt
     verb: chains-to
     mechanism: "sequential invocation (human-mediated)"
     direction: invoke
-
   # ── instruction outbound ──
-
   - from: instruction
     to: context
     verb: references
     mechanism: "markdown links in body"
     direction: reference
-
   - from: instruction
     to: memory
     verb: references
     mechanism: "markdown links in body"
     direction: reference
-
   - from: instruction
     to: agents_md
     verb: compiles-into
     mechanism: "apm compile merges by applyTo group"
     direction: produce
-
   # ── context outbound ──
-
   - from: context
     to: context
     verb: references
     mechanism: "markdown cross-links"
     direction: reference
-
   # ── skill outbound ──
-
   - from: skill
     to: context
     verb: references
     mechanism: "links to references/ subdirectory"
     direction: reference
-
   # ── meta production ──
-
   - from: agents_md
     to: agent
     verb: inherited-by
     mechanism: "runtime directory tree walk"
     direction: auto-load
-
 # ──────────────────────────────────────────────
 # Invalid edges
 #
@@ -254,89 +214,74 @@ edges:
 # An agent encountering a proposed composition matching
 # any of these rules should refuse or flag it.
 # ──────────────────────────────────────────────
-
 invalid:
   - from: instruction
     to: [agent, prompt, skill]
     verb: invoke
     reason: >
-      Instructions are passive rules. They are injected into agents
-      via applyTo, they never invoke or execute anything.
+      Instructions are passive rules. They are injected into agents via applyTo, they never invoke or execute anything.
 
   - from: context
     to: [agent, prompt, instruction, memory, spec, skill]
     verb: invoke
     reason: >
-      Context is pure reference knowledge. No outbound edges
-      except cross-references to other context files.
+      Context is pure reference knowledge. No outbound edges except cross-references to other context files.
 
   - from: memory
     to: [agent, prompt, instruction, context, spec, skill]
     verb: invoke
     reason: >
-      Memory is pure state. It is written to and read from,
-      but never initiates any action.
+      Memory is pure state. It is written to and read from, but never initiates any action.
 
   - from: spec
     to: [agent, prompt, instruction, skill]
     verb: invoke
     reason: >
-      Specs are blueprints consumed by prompts. They cannot
-      invoke agents or trigger execution.
+      Specs are blueprints consumed by prompts. They cannot invoke agents or trigger execution.
 
   - from: skill
     to: [prompt, instruction]
     verb: invoke
     reason: >
-      Skills describe capabilities for auto-discovery. They do not
-      directly execute prompts or load instructions. Agents mediate.
+      Skills describe capabilities for auto-discovery. They do not directly execute prompts or load instructions. Agents mediate.
 
   - from: agent
     to: spec
     verb: consumes
     reason: >
-      Agents do not directly consume specs. Prompts mediate
-      the spec-to-agent path.
+      Agents do not directly consume specs. Prompts mediate the spec-to-agent path.
 
   - from: prompt
     to: agent
     verb: hands-off-to
     reason: >
-      Only agents can declare handoffs. Prompts activate agents
-      via mode/agent frontmatter, but cannot hand off between them.
+      Only agents can declare handoffs. Prompts activate agents via mode/agent frontmatter, but cannot hand off between them.
 
 # ──────────────────────────────────────────────
 # Tier constraints
 #
 # Derived rules from the three-tier model.
 # ──────────────────────────────────────────────
-
 tiers:
   active:
     members: [agent, prompt]
     can: [invoke, reference, produce, auto-load]
     note: >
-      Active primitives orchestrate execution. Agents are the top-level
-      personas; prompts are the workflow layer invoked by users. Both can
-      reference passive primitives and write back to memory.
+      Active primitives orchestrate execution. Agents are the top-level personas; prompts are the workflow layer invoked by users. Both can reference passive primitives and write back to memory.
 
   passive:
     members: [instruction, context, memory, spec]
     can: [reference]
     cannot: [invoke, produce]
     note: >
-      Passive primitives are consumed by active primitives.
-      The only exception is instruction → agents_md (via apm compile),
-      which is a build-time transformation, not a runtime invocation.
+      Passive primitives are consumed by active primitives. The only exception is instruction → agents_md (via apm compile), which is a build-time transformation, not a runtime invocation.
 
   meta:
     members: [skill, agents_md]
     can: [reference, auto-load]
     cannot: [invoke]
     note: >
-      Meta primitives package or compile other primitives.
-      Skills are auto-discovered by agents. AGENTS.md is
-      inherited via directory tree walk.
+      Meta primitives package or compile other primitives. Skills are auto-discovered by agents. AGENTS.md is inherited via directory tree walk.
 
 # ──────────────────────────────────────────────
 # Feedback loops
@@ -344,18 +289,14 @@ tiers:
 # The only two cycles in the graph.
 # Everything else is strictly top-down.
 # ──────────────────────────────────────────────
-
 feedback_loops:
   - name: learning
     path: "prompt → memory → prompt"
     description: >
-      Prompts update memory after execution. Future prompts
-      read memory to avoid repeating mistakes. Human-mediated
-      cycle — the same prompt instance doesn't read its own writes.
+      Prompts update memory after execution. Future prompts read memory to avoid repeating mistakes. Human-mediated cycle — the same prompt instance doesn't read its own writes.
 
   - name: delegation
     path: "agent → agent → agent"
     description: >
-      Agents hand off to other agents via handoffs frontmatter
-      or spawn subagents via tools. Enables specialization without
-      monolithic personas.
+      Agents hand off to other agents via handoffs frontmatter or spawn subagents via tools. Enables specialization without monolithic personas.
+

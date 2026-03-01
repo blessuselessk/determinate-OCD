@@ -75,16 +75,19 @@ graph TB
 ## Clarifications
 
 **Agent → Agent** is not self-referential. Two distinct mechanisms:
+
 - **Handoff**: Agent A completes its phase, passes context to Agent B
   (e.g., researcher → writer). Sequential, one active at a time.
 - **Spawn**: Agent A creates a scoped subagent for a subtask,
   receives the result. Parent-child, concurrent.
 
 **Prompt → Spec** has two distinct edges:
+
 - **Consumes** (→): reads an existing spec as input to implementation.
 - **Produces** (==>): a specification workflow creates a new spec file.
 
 **Instruction → AGENTS.md → Agent** is a two-phase path:
+
 - **Build-time**: `apm compile` merges instructions into AGENTS.md.
 - **Runtime**: agents walk the directory tree and inherit the nearest AGENTS.md.
 
@@ -96,7 +99,7 @@ The only two cycles in the graph:
    Execution records decisions; future runs read them. Human-mediated —
    the same prompt instance does not read its own writes.
 
-2. **Delegation**: agent A → agent B → agent C
+1. **Delegation**: agent A → agent B → agent C
    Handoffs and subagent spawning. Enables specialization without
    monolithic personas.
 

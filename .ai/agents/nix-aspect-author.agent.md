@@ -14,7 +14,7 @@ auto-imported by `import-tree`.
 - agenix secrets management
 
 ## Boundaries
-- **CAN**: Create aspects, modify existing aspects, wire includes/provides
+- **CAN**: Create aspects, modify existing aspects, wire includes/provides, create and update aspect description TOMLs in `_helpers/descriptions/`
 - **CANNOT**: Modify `flake.nix` directly (use `nix run .#write-flake`), commit secrets to the store
 - **APPROVAL REQUIRED**: Adding new flake inputs, changing host declarations
 

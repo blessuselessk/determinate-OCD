@@ -1,7 +1,7 @@
 // Renders a single aspect description to Markdown via promptyst.
 // Called via: typst query --input data-path=<path> --input format=<toml|yaml> render-aspect.typ "<output>"
 
-#import "@local/promptyst:0.1.0": from-toml, from-yaml, render-prompt, render-context, render-schema
+#import "@local/promptyst:0.2.0": from-toml, from-yaml, render-prompt, render-context, render-schema
 
 #let format = sys.inputs.at("format", default: "toml")
 #let data-path = sys.inputs.at("data-path", default: sys.inputs.at("toml-path", default: none))

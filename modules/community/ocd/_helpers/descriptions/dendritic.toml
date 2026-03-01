@@ -1,0 +1,27 @@
+[aspect]
+id = "infra.dendritic"
+version = "0.1.0"
+role = "Framework bootstrap — imports flake-file and den dendritic modules, declares core inputs"
+
+[context]
+id = "dendritic-ctx"
+
+[[context.entries]]
+key = "imports"
+value = "flake-file.flakeModules.dendritic, den.flakeModules.dendritic (with `or {}` fallback)"
+
+[[context.entries]]
+key = "input-nixpkgs"
+value = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz"
+
+[[context.entries]]
+key = "input-den"
+value = "github:vic/den"
+
+[[context.entries]]
+key = "input-flake-file"
+value = "github:vic/flake-file"
+
+[[context.entries]]
+key = "pattern"
+value = "Takes `inputs` argument; flake-file.inputs declares the three foundational flake inputs"

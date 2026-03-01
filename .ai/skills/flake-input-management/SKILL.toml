@@ -1,0 +1,70 @@
+[skill]
+name = "flake-input-management"
+description = """\
+Flake input declaration and regeneration patterns via flake-file.
+Use when adding, updating, or removing flake inputs."""
+trigger = "You are adding, updating, or removing a flake input."
+rules = [
+  "**Declare inputs in modules** — use `flake-file.inputs.<name>.url` in the aspect that needs the input, not in `flake.nix` directly",
+  "**Regenerate after changes** — run `nix run .#write-flake` (Linux) or `nix build .#write-flake && cp result/bin/write-flake flake.nix` (macOS) to update `flake.nix`",
+  "**Lock after regeneration** — `nix flake update <input-name>` to pin the new input in `flake.lock`",
+  "**Follow nixpkgs** — transitive inputs that depend on nixpkgs should declare `inputs.nixpkgs.follows = \"nixpkgs\"`",
+  "**Never hand-edit `flake.nix`** — it is generated from module options; manual edits will be overwritten and fail `check-flake-file`",
+]
+
+[[skill.extra-sections]]
+heading = "Adding an Input"
+body = """\
+### Declare in the consuming aspect
+```nix
+# modules/<namespace>/<name>.nix
+{ inputs, ... }:
+{
+  flake-file.inputs.new-dep = {
+    url = "github:owner/repo";
+    inputs.nixpkgs.follows = "nixpkgs";  # if it uses nixpkgs
+  };
+
+  # Use the input
+  ocd.<name>.nixos = {
+    imports = [ inputs.new-dep.nixosModules.default ];
+    # ...
+  };
+}
+```
+
+### Regenerate and lock
+```bash
+# Linux
+nix run .#write-flake
+
+# macOS (GNU cp flags fail in sandbox)
+nix build .#write-flake
+cp result/bin/write-flake flake.nix
+
+# Lock the new input
+nix flake update new-dep
+
+# Verify
+nix flake check
+```"""
+
+[[skill.extra-sections]]
+heading = "Input Patterns in This Repo"
+body = """\
+| Aspect | Input | Purpose |
+|--------|-------|---------|
+| `dendritic.nix` | `nixpkgs`, `den`, `flake-file` | Core framework |
+| `home-manager.nix` | `home-manager` | Home Manager module system |
+| `context-compile-inputs.nix` | `nuenv`, `promptyst` | Context pipeline build tools |
+| `lessuseless/jujutsu.nix` | `jjui` | Jujutsu TUI |
+
+Inputs declared in separate aspects are merged by flake-file and written to a single `flake.nix`."""
+
+[[skill.references]]
+label = "Stack reference"
+path = "../../context/stack.context.md"
+
+[[skill.references]]
+label = "Platform notes"
+path = "../../context/platform-notes.context.md"

@@ -1,0 +1,79 @@
+[skill]
+name = "host-declarations"
+description = """\
+Den host declaration patterns and host-specific aspect wiring.
+Use when creating or modifying host declarations, host aspects,
+or user bindings under den.hosts."""
+trigger = "You are creating or modifying host declarations or host-specific aspects."
+rules = [
+  "**One host declaration** per `den.hosts.<system>.<hostname>` entry in `modules/hosts.nix`",
+  "**User binding** via `den.hosts.<system>.<hostname>.users.<user> = { }` — assigns a user to the host",
+  "**Host aspect** — a separate `.nix` file with boot, filesystem, and hardware config for the specific host",
+  "**Default includes** wire shared aspects to all hosts via `den.default.includes`",
+  "**Architecture** must be one of: `x86_64-linux`, `aarch64-linux`, `aarch64-darwin`",
+]
+
+[[skill.extra-sections]]
+heading = "Den Hosts Syntax"
+body = """\
+### Declare a host with a user
+```nix
+# modules/hosts.nix
+{
+  den.hosts.x86_64-linux.myhost.users.admin = { };
+}
+```
+
+### Host aspect with boot and filesystem
+```nix
+# modules/community/ocd/myhost.nix — or modules/<infra>/myhost.nix
+{ den, ... }:
+{
+  den.aspects.myhost = {
+    includes = [ <ocd.bootloader> <ocd.networking> ];
+    nixos = {
+      boot.loader.systemd-boot.enable = true;
+      fileSystems."/" = {
+        device = "/dev/disk/by-label/nixos";
+        fsType = "ext4";
+      };
+    };
+  };
+}
+```
+
+### User aspect binding
+```nix
+# modules/<user>/profile.nix
+{
+  den.aspects.<user>-profile = {
+    includes = [ <den.provides.primary-user> ];
+    homeManager = { ... };
+  };
+}
+```
+
+### Standalone home-manager (macOS)
+```nix
+den.homes.aarch64-darwin.<user> = { aspect = "<user>-profile"; };
+```"""
+
+[[skill.extra-sections]]
+heading = "Current Hosts"
+body = """\
+The project currently declares one host:
+
+```nix
+# modules/hosts.nix
+den.hosts.x86_64-linux.ocd-dev.users.admin = { };
+```
+
+`ocd-dev` is a placeholder host for CI validation — fake boot/fs config, no real deployment target."""
+
+[[skill.references]]
+label = "Stack reference"
+path = "../../context/stack.context.md"
+
+[[skill.references]]
+label = "Dendritic instructions"
+path = "../../instructions/dendritic.instructions.md"

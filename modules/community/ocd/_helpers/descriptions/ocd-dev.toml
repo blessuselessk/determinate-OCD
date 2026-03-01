@@ -1,0 +1,27 @@
+[aspect]
+id = "infra.ocd-dev"
+version = "0.1.0"
+role = "Placeholder host aspect for ocd-dev — fake boot/fs config for CI, tty-autologin for admin"
+
+[context]
+id = "ocd-dev-ctx"
+
+[[context.entries]]
+key = "ocd-dev-aspect"
+value = "den.aspects.ocd-dev — includes tty-autologin for admin, grub disabled, fake root filesystem"
+
+[[context.entries]]
+key = "admin-aspect"
+value = "den.aspects.admin — includes den.provides.primary-user"
+
+[[context.entries]]
+key = "boot"
+value = "boot.loader.grub.enable = false (no real bootloader)"
+
+[[context.entries]]
+key = "filesystem"
+value = "fileSystems.\"/\".device = \"/dev/fake\" (satisfies NixOS eval, not bootable)"
+
+[[context.entries]]
+key = "pattern"
+value = "Takes `den` argument; defines two den.aspects (ocd-dev host + admin user)"

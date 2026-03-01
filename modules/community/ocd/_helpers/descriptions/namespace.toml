@@ -1,0 +1,23 @@
+[aspect]
+id = "infra.namespace"
+version = "0.1.0"
+role = "Namespace routing — registers ocd (public) and lessuseless (private) namespaces"
+
+[context]
+id = "namespace-ctx"
+
+[[context.entries]]
+key = "ocd-namespace"
+value = "inputs.den.namespace \"ocd\" true — community namespace, exposed at flake.denful.ocd"
+
+[[context.entries]]
+key = "lessuseless-namespace"
+value = "inputs.den.namespace \"lessuseless\" false — personal namespace, local only"
+
+[[context.entries]]
+key = "findFile"
+value = "_module.args.__findFile = den.lib.__findFile — enables angle-bracket syntax (<ocd.aspect>)"
+
+[[context.entries]]
+key = "pattern"
+value = "Takes `inputs` and `den` arguments; sets _module.args then imports namespace declarations"

@@ -1,0 +1,19 @@
+[aspect]
+id = "infra.home-manager"
+version = "0.1.0"
+role = "Home Manager integration — declares input with nixpkgs follows, sets den default includes"
+
+[context]
+id = "home-manager-ctx"
+
+[[context.entries]]
+key = "input"
+value = "github:nix-community/home-manager, inputs.nixpkgs.follows = nixpkgs"
+
+[[context.entries]]
+key = "default-includes"
+value = "den._.home-manager, den._.inputs', den._.self'"
+
+[[context.entries]]
+key = "pattern"
+value = "Takes `den` argument; den.default.includes adds HM support to all hosts"

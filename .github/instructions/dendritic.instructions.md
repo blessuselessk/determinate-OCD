@@ -1,7 +1,6 @@
----
-applyTo: "modules/**/*.nix"
-description: "Dendritic pattern rules for aspect files"
----
+______________________________________________________________________
+
+## applyTo: "modules/\*\*/\*.nix" description: "Dendritic pattern rules for aspect files"
 
 # Dendritic Aspect Rules
 

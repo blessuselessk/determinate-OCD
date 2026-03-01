@@ -1,0 +1,36 @@
+[workflow]
+id = "new-aspect"
+description = "Create a new dendritic aspect with description and wiring"
+mode = "agent"
+agent = "nix-aspect-author"
+
+[[workflow.phases]]
+name = "Gather Requirements"
+steps = [
+  "Determine the aspect name and namespace (ocd, user, infra)",
+  "Identify what NixOS options/services it configures",
+  "List dependencies on other aspects (includes)",
+]
+checkpoint = "Confirm aspect name and namespace before proceeding."
+
+[[workflow.phases]]
+name = "Create Aspect"
+steps = [
+  "Create `modules/<namespace>/<name>.nix` with the aspect skeleton",
+  "Wire `includes` for any dependencies",
+  "Add the aspect to `den.default.includes` if it should be default",
+]
+
+[[workflow.phases]]
+name = "Create Description"
+steps = [
+  "Create `.ai/prompts/<name>.yaml` with the promptyst schema",
+  "Run `nix run .#write-context-docs` to verify it renders",
+]
+
+[[workflow.phases]]
+name = "Verify"
+steps = [
+  "Run `nix flake check`",
+  "Review the rendered Markdown in `.ai/output/`",
+]

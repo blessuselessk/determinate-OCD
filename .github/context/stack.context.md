@@ -37,12 +37,14 @@ Layer 4: Core Plumbing        <- flake-parts, home-manager, agenix
 ## Layer 3 — Dendritic Ecosystem
 
 ### Pattern origin
+
 | Repo | What |
 |------|------|
 | `github:mightyiam/dendritic` | Canonical pattern definition |
 | `github:vic/dendritic` | Annotated fork with examples |
 
 ### Core primitives
+
 | Repo | What |
 |------|------|
 | `github:vic/import-tree` | Auto-imports all `.nix` under a dir. Default filter: `/_` infix excluded. Chainable builder API. |
@@ -50,6 +52,7 @@ Layer 4: Core Plumbing        <- flake-parts, home-manager, agenix
 | `github:vic/flake-file` | Generates `flake.nix` from module options. Regenerate: `nix run .#write-flake` |
 
 ### Framework
+
 | Repo | What |
 |------|------|
 | `github:vic/den` | Batteries-included: `den.hosts`, `den.homes`, `den.default.includes`, angle-bracket syntax, multi-platform |
@@ -57,6 +60,7 @@ Layer 4: Core Plumbing        <- flake-parts, home-manager, agenix
 | `github:vic/dendrix` | Community distribution of dendritic modules |
 
 ### Reference implementation
+
 | Repo | What |
 |------|------|
 | `github:vic/vix` (den branch) | Vic's config. Three namespaces: `community/vix/`, `vic/`, `my/`. Study for layout patterns. |
@@ -79,17 +83,20 @@ Determinate Systems -> OpenClaw -> Dendritic pattern -> import-tree / flake-aspe
 ## Den API Quick Reference
 
 ### Hosts and users
+
 ```nix
 den.hosts.x86_64-linux.<hostname>.users.<user>.aspect = "<user>-profile";
 ```
 
 ### Named aspects
+
 ```nix
 den.aspects.<name>.includes = [ <namespace.aspect> ... ];
 den.aspects.<name>.nixos = { ... };  # any class name accepted
 ```
 
 ### Namespaces
+
 ```nix
 imports = [
   (inputs.den.namespace "ocd" true)      # community (exposed)
@@ -99,6 +106,7 @@ imports = [
 ```
 
 ### Default includes
+
 ```nix
 den.default.includes = [
   <ocd.networking>
@@ -108,6 +116,7 @@ den.default.includes = [
 ```
 
 ### Standalone home-manager
+
 ```nix
 den.homes.x86_64-linux.<user> = { aspect = "<user>-profile"; };
 ```

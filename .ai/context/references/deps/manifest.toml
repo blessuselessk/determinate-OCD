@@ -1,0 +1,135 @@
+# Dep reference manifest — source of truth for update-dep-refs
+# Each [[dep]] generates a {name}.md file in this directory.
+# Fields:
+#   name        (required) — dep name, becomes filename
+#   repo        (required) — github:owner/repo reference
+#   context7    (optional) — Context7 library ID; if absent, falls back to GitHub README
+#   query       (required) — search query for Context7 or description of what to extract
+#   description (required) — one-line summary for the blockquote header
+
+# --- den ecosystem (vic) ---
+
+[[dep]]
+name = "den"
+repo = "github:vic/den"
+context7 = "/vic/den"
+query = "What is den, aspects, includes, namespaces, API"
+description = "Context-aware framework for building modular Nix configurations for NixOS, nix-darwin, and home-manager using declarative dendritic libraries."
+
+[[dep]]
+name = "import-tree"
+repo = "github:vic/import-tree"
+context7 = "/vic/import-tree"
+query = "What is import-tree, filters, API, conventions"
+description = "Recursively imports Nix modules from a directory, providing a simple, extensible API for NixOS, home-manager, and flake-parts."
+
+[[dep]]
+name = "flake-file"
+repo = "github:vic/flake-file"
+context7 = "/vic/flake-file"
+query = "What is flake-file, declaring inputs, commands, check"
+description = "Generates clean, maintainable flake.nix from Nix module options. Declare inputs where you use them."
+
+[[dep]]
+name = "flake-aspects"
+repo = "github:vic/flake-aspects"
+context7 = "/vic/flake-aspects"
+query = "What is flake-aspects, transposes aspects to modules, API"
+description = "A flake-parts module that transposes flake.aspects into flake.modules for intuitive dendritic configuration with cross-aspect dependency management."
+
+[[dep]]
+name = "with-inputs"
+repo = "github:vic/with-inputs"
+query = "What is with-inputs, input resolution, follows"
+description = "Flake-like input resolution for non-flake Nix projects. Manages follows, local checkouts, and sub-input overrides."
+
+[[dep]]
+name = "denful"
+repo = "github:vic/denful"
+context7 = "/vic/denful"
+query = "What is denful, modules, facets, utilities"
+description = "Dendritic Nix modules, enough to fill a den. Reusable facets and shared utilities for den-based configurations."
+
+[[dep]]
+name = "dendrix"
+repo = "github:vic/dendrix"
+context7 = "/vic/dendrix"
+query = "What is dendrix, community modules, discovery"
+description = "Community platform for sharing and discovering dendritic Nix sub-trees. The AUR of Dendritic Nix."
+
+[[dep]]
+name = "vix"
+repo = "github:vic/vix"
+context7 = "/vic/vix"
+query = "What is vix, aspects, NixOS hosts"
+description = "Vic's Nix Environment. A dendritic configuration providing reusable aspects for NixOS hosts."
+
+[[dep]]
+name = "checkmate"
+repo = "github:vic/checkmate"
+query = "What is checkmate, flake check, output"
+description = "Nix flake check runner with structured output and parallel execution."
+
+# --- OpenClaw ---
+
+[[dep]]
+name = "openclaw"
+repo = "github:openclaw/openclaw"
+context7 = "/openclaw/openclaw"
+query = "What is openclaw, gateway, messaging, AI agents, tool use"
+description = "Personal AI assistant you run on your own devices. Gateway connects messaging platforms to AI agents with tool use, voice, and browser automation."
+
+[[dep]]
+name = "nix-openclaw"
+repo = "github:openclaw/nix-openclaw"
+query = "What is nix-openclaw, Nix packaging, home-manager module"
+description = "Declarative Nix packaging and home-manager module for OpenClaw. Reproducible deployment on macOS and Linux."
+
+# --- AI-native / PROSE ---
+
+[[dep]]
+name = "awesome-ai-native"
+repo = "github:danielmeppiel/awesome-ai-native"
+query = "What is PROSE framework, AI-native development, workflows"
+description = "PROSE framework for AI Native Development. Transforms unpredictable AI interactions into reliable, structured workflows."
+
+[[dep]]
+name = "apm"
+repo = "github:microsoft/apm"
+query = "What is apm, agent package manager, primitives, compilation"
+description = "Agent Package Manager. Open-source dependency manager for AI agent primitives with mathematical context optimization."
+
+[[dep]]
+name = "apm-compilation"
+repo = "github:microsoft/apm"
+query = "What is apm compile, context optimization, AGENTS.md placement"
+description = "APM compilation system for mathematically optimized AGENTS.md placement via constraint satisfaction."
+
+# --- Nix ecosystem ---
+
+[[dep]]
+name = "determinate"
+repo = "github:DeterminateSystems/determinate"
+context7 = "/websites/determinate_systems"
+query = "What is determinate, Nix installer, FlakeHub, system management"
+description = "Enterprise Nix distribution with validated downstream Nix, FlakeHub integration, and automated system management."
+
+[[dep]]
+name = "nix-darwin"
+repo = "github:nix-darwin/nix-darwin"
+context7 = "/nix-darwin/nix-darwin"
+query = "What is nix-darwin, macOS, system configuration, modules"
+description = "Declarative macOS system configuration using the Nix module system. NixOS-style management for macOS."
+
+[[dep]]
+name = "home-manager"
+repo = "github:nix-community/home-manager"
+context7 = "/nix-community/home-manager"
+query = "What is home-manager, user environments, programs, modules"
+description = "Declarative management of user home environments using the Nix module system. Programs, dotfiles, packages, and services per-user."
+
+[[dep]]
+name = "nh"
+repo = "github:nix-community/nh"
+query = "What is nh, os switch, darwin switch, home switch, clean"
+description = "Modern CLI helper for the Nix ecosystem. Unified interface for NixOS, nix-darwin, and home-manager with enhanced UX."

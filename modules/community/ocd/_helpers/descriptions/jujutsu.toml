@@ -1,0 +1,134 @@
+[aspect]
+id = "lessuseless.jujutsu"
+version = "0.1.0"
+role = "Personal Jujutsu VCS config — aliases, revsets, difftastic, SSH signing, tool wrapping (jjui, lazyjj, jj-fzf)"
+
+[context]
+id = "jujutsu-ctx"
+
+[[context.entries]]
+key = "input"
+value = "jjui (github:idursun/jjui) — TUI for jj, declared via flake-file.inputs"
+
+[[context.entries]]
+key = "packages"
+value = "lazyjj, jj-fzf (from nixpkgs), jjui-wrapped (with ssh-add pre-check)"
+
+[[context.entries]]
+key = "diff-tool"
+value = "difftastic with --color=always for diff and show commands"
+
+[[context.entries]]
+key = "signing"
+value = "SSH backend, behaviour=own, key=~/.ssh/id_ed25519.pub"
+
+[[context.entries]]
+key = "editor"
+value = "nvim (editor), meld-3 (diff-editor), meld (merge-editor)"
+
+[[context.entries]]
+key = "revset-aliases"
+value = "trunk()=main@origin, compared_to_trunk(), immutable_heads(), closest_bookmark(to), default_log(), default(), recent() (1 week)"
+
+[[context.entries]]
+key = "aliases"
+value = "s=show, l=log compared_to_trunk, ll=log .., lr=log default()&recent(), sq=squash -i, su/sd/sU/sD=directional squash, tug=advance bookmark"
+
+[[context.entries]]
+key = "default-command"
+value = "log --no-pager --reversed --stat --template builtin_log_compact_full_description --limit 3"
+
+[[context.entries]]
+key = "push-bookmark-template"
+value = "lessuseless/jj-change-"
+
+[[context.entries]]
+key = "jjui-config"
+value = "~/.config/jjui/config.toml — leader.e sends 'jj edit $change_id && $VISUAL $file'"
+
+[[context.entries]]
+key = "scope"
+value = "lessuseless namespace, homeManager class only"
+
+[[constraints]]
+text = "jjui must be wrapped with ssh-add pre-check to avoid silent auth failures"
+severity = "usability"
+
+[[constraints]]
+text = "Signing key path and user.name/email are TODOs — must be set before real use"
+severity = "setup"
+
+[[constraints]]
+text = "conflict-marker-style must be git for compatibility with standard merge tools"
+severity = "correctness"
+
+[[constraints]]
+text = "movement.edit must be false to prevent accidental working-copy edits on navigation"
+severity = "safety"
+
+[[steps]]
+text = "Declare jjui flake input and build jjui-wrapped with ssh-add pre-check"
+
+[[steps]]
+text = "Add lazyjj, jj-fzf, and jjui-wrapped to home.packages"
+
+[[steps]]
+text = "Enable programs.jujutsu with difftastic diff-formatter"
+
+[[steps]]
+text = "Define revset-aliases: trunk, compared_to_trunk, immutable_heads, closest_bookmark, default, recent"
+
+[[steps]]
+text = "Define template-aliases for short IDs and timestamps"
+
+[[steps]]
+text = "Configure UI: default-command, editors, conflict-marker-style, movement.edit=false"
+
+[[steps]]
+text = "Set up SSH signing with behaviour=own"
+
+[[steps]]
+text = "Define command aliases (s, l, ll, lr, sq, su, sd, sU, sD, tug)"
+
+[[steps]]
+text = "Generate jjui config.toml with leader.e edit-file binding"
+
+[[inputs]]
+name = "jjui-url"
+type = "flake-input"
+description = "GitHub source for jjui TUI (default: github:idursun/jjui)"
+
+[[inputs]]
+name = "signing-key"
+type = "path"
+description = "SSH public key path for commit signing"
+
+[schema]
+id = "jujutsu-output"
+
+[[schema.fields]]
+name = "programs-enabled"
+type = "bool"
+description = "Whether programs.jujutsu is enabled in Home Manager"
+
+[[schema.fields]]
+name = "packages-installed"
+type = "list(string)"
+description = "jjui-wrapped, lazyjj, jj-fzf available in home.packages"
+
+[[schema.fields]]
+name = "aliases-defined"
+type = "list(string)"
+description = "All jj aliases registered in settings.aliases"
+
+[[checkpoints]]
+id = "verify-ssh-wrap"
+after-step = 1
+assertion = "jjui-wrapped script calls ssh-add -l before launching jjui"
+on-fail = "halt"
+
+[[checkpoints]]
+id = "verify-revsets"
+after-step = 4
+assertion = "trunk() resolves to main@origin and compared_to_trunk() references trunk()"
+on-fail = "halt"

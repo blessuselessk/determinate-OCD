@@ -1,0 +1,19 @@
+[aspect]
+id = "infra.defaults"
+version = "0.1.0"
+role = "Global state version baseline for NixOS and Home Manager"
+
+[context]
+id = "defaults-ctx"
+
+[[context.entries]]
+key = "nixos-stateVersion"
+value = "25.05"
+
+[[context.entries]]
+key = "home-stateVersion"
+value = "25.05"
+
+[[context.entries]]
+key = "scope"
+value = "den.default.nixos and den.default.homeManager"

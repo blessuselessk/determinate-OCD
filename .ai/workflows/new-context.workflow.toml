@@ -1,0 +1,37 @@
+[workflow]
+id = "new-context"
+description = "Research and author a new .context.md reference file"
+mode = "agent"
+agent = "context-author"
+
+[[workflow.phases]]
+name = "Scope"
+steps = [
+  "Identify the knowledge gap — what dependency, API, or concept needs a reference?",
+  "Check `.ai/context/` for existing coverage — avoid duplication",
+  "Name the file: `<topic>.context.md`",
+]
+checkpoint = "Confirm the topic and filename before researching."
+
+[[workflow.phases]]
+name = "Research"
+steps = [
+  "Read upstream documentation (README, docs site, source code)",
+  "Read relevant project files that use the dependency",
+  "Collect key facts: API surface, configuration options, conventions, gotchas",
+]
+
+[[workflow.phases]]
+name = "Author"
+steps = [
+  "Create `.ai/context/<topic>.context.md` with `description` frontmatter",
+  "Structure as: purpose statement, reference tables, code examples",
+  "Optimize for agent consumption — concise, scannable, no narrative filler",
+]
+
+[[workflow.phases]]
+name = "Verify"
+steps = [
+  "Check cross-references resolve (relative paths to other primitives)",
+  "Confirm the file follows [primitive authoring rules](../instructions/primitive-authoring.instructions.md)",
+]

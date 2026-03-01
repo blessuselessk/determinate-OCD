@@ -1,0 +1,40 @@
+[workflow]
+id = "new-workflow"
+description = "Create a new PROSE workflow primitive"
+mode = "agent"
+agent = "prose-author"
+
+[[workflow.phases]]
+name = "Scope"
+steps = [
+  "Identify the task this workflow guides",
+  "Check existing workflows in `.ai/workflows/` for overlap",
+  "Choose an ID: `<task>.workflow.toml`",
+  "Determine which agent should execute this workflow",
+]
+checkpoint = "Confirm the workflow ID, executing agent, and purpose before designing phases."
+
+[[workflow.phases]]
+name = "Design Phases"
+steps = [
+  "Break the task into 3–5 sequential phases",
+  "Place checkpoints after information-gathering phases (before irreversible actions)",
+  "Ensure the final phase includes verification steps",
+]
+
+[[workflow.phases]]
+name = "Author"
+steps = [
+  "Create `.ai/workflows/<id>.workflow.toml` with `[workflow]` header",
+  "Define `[[workflow.phases]]` with name, steps, and optional checkpoint",
+  "Verify the final phase includes a `nix flake check` or equivalent verification step",
+]
+
+[[workflow.phases]]
+name = "Integrate"
+steps = [
+  "`jj file track` the new `.workflow.toml` file",
+  "Run `nix run .#write-context-docs` to render the Markdown output",
+  "`jj file track` all generated outputs (rendered `.md`, ref pointers)",
+  "Run `nix flake check` to verify staleness checks pass",
+]

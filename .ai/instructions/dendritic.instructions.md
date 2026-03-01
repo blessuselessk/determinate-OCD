@@ -9,15 +9,15 @@ description: "Dendritic aspect authoring rules for NixOS modules"
 - Use `<user>.<name>.nixos = { ... }` for personal aspects
 - Compose with `includes`, decompose with `provides`
 
-## Prohibited
-- No `specialArgs` or `extraSpecialArgs`
-- No `default.nix` under `modules/`
-- No secrets in Nix code or the Nix store
-
 ## Path Conventions
 - `/_` infix in path: excluded by `import-tree` (helpers, context, data)
 - `+flag` prefix: Dendrix opt-in group
 - `private` infix: excluded from community pipeline
+
+## Prohibited
+- No `specialArgs` or `extraSpecialArgs`
+- No `default.nix` under `modules/`
+- No secrets in Nix code or the Nix store
 
 ## References
 - [Stack reference](../context/stack.context.md)

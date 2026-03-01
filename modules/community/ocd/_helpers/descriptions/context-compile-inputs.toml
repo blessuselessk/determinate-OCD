@@ -1,0 +1,19 @@
+[aspect]
+id = "infra.context-compile-inputs"
+version = "0.1.0"
+role = "Declares flake inputs for the context-compile pipeline (nuenv + promptyst)"
+
+[context]
+id = "context-compile-inputs-ctx"
+
+[[context.entries]]
+key = "nuenv-input"
+value = "github:xav-ie/nuenv — Nushell-based derivation builder, via lib.mkDefault"
+
+[[context.entries]]
+key = "promptyst-input"
+value = "github:blessuselessk/promptyst — Typst DSL for structured prompts, flake=false, via lib.mkDefault"
+
+[[context.entries]]
+key = "pattern"
+value = "Takes `lib` argument; both URLs use mkDefault so downstream can override"

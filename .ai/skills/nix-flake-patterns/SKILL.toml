@@ -1,0 +1,70 @@
+[skill]
+name = "nix-flake-patterns"
+description = """\
+Den framework and flake-parts conventions for NixOS aspect authoring.
+Use when creating or modifying files under modules/. Provides quick
+reference for den syntax, import-tree rules, and aspect composition."""
+trigger = "You are creating or modifying a `.nix` file under `modules/`."
+rules = [
+  "**One aspect per file** — filename is the aspect name",
+  "**No `default.nix`** under `modules/` — import-tree auto-discovers",
+  "**No `specialArgs`** — share values via `let`, module options, or `config`",
+  "**`/_` infix** in path excludes from import-tree (use for helpers, data)",
+]
+
+[[skill.extra-sections]]
+heading = "Den Syntax"
+body = """\
+### Aspect classes
+```nix
+ocd.<name>.nixos = { ... };        # NixOS system config
+ocd.<name>.homeManager = { ... };  # Home Manager user config
+ocd.<name>.darwin = { ... };       # macOS config
+```
+
+### Composition
+```nix
+ocd.<name> = {
+  includes = [ <ocd.networking> <ocd.boot> ];
+  nixos = { ... };
+};
+```
+
+### Sub-aspects (provides)
+```nix
+ocd.<name>.provides = {
+  hw.includes = [ <ocd.bootloader> ];
+  vm.includes = [ <ocd.installer> ];
+};
+# Consumed as: <<ocd.name>/hw>
+```
+
+### Hosts
+```nix
+den.hosts.x86_64-linux.<hostname>.users.<user> = { };
+```
+
+### Standalone home-manager
+```nix
+den.homes.aarch64-darwin.<user> = { aspect = "<user>-profile"; };
+```
+
+### Namespaces
+```nix
+imports = [ (inputs.den.namespace "ocd" true) ];  # community (exposed)
+imports = [ (inputs.den.namespace "<user>" false) ];  # personal
+```
+
+### Flake inputs (via flake-file)
+```nix
+flake-file.inputs.<name>.url = "github:owner/repo";
+# Then: nix run .#write-flake to regenerate flake.nix
+```"""
+
+[[skill.references]]
+label = "Dendritic instructions"
+path = "../../instructions/dendritic.instructions.md"
+
+[[skill.references]]
+label = "Stack reference"
+path = "../../context/stack.context.md"
