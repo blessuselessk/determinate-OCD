@@ -14,6 +14,8 @@
       ];
 
       descriptions = ./_helpers/descriptions;
+      composabilitySchema = ./../../../.ai/context/primitive-composability-schema.yaml;
+      agentsHeader = ./../../../.ai/AGENTS.md.header;
 
       contextDocs = pkgsWithNuenv.nuenv.mkDerivation {
         name = "ocd-context-docs";
@@ -21,14 +23,32 @@
         packages = [ pkgs.typst ];
 
         RENDER_TEMPLATE = "./render-aspect.typ";
+        AGENTS_TEMPLATE = "./render-agents-md.typ";
         PROMPTYST_PACKAGE_PATH = "${promptystPackagePath}";
         DESCRIPTIONS_DIR = "${descriptions}";
+        COMPOSABILITY_SCHEMA = "${composabilitySchema}";
+        AGENTS_HEADER = "${agentsHeader}";
 
         build = builtins.readFile ./_helpers/extract-and-render.nu;
       };
+      writeContextDocs = pkgs.writeShellScriptBin "write-context-docs" ''
+        set -euo pipefail
+        target="''${1:-.}"
+        mkdir -p "$target/.ai" "$target/.ai/output"
+        install -m 644 "${contextDocs}/AGENTS.md" "$target/.ai/AGENTS.md"
+        echo "Wrote .ai/AGENTS.md"
+        for f in ${contextDocs}/*.md; do
+          name=$(basename "$f")
+          if [ "$name" != "AGENTS.md" ]; then
+            install -m 644 "$f" "$target/.ai/output/$name"
+            echo "Wrote .ai/output/$name"
+          fi
+        done
+      '';
     in
     {
       packages.context-docs = contextDocs;
+      packages.write-context-docs = writeContextDocs;
       checks.context-compile = contextDocs;
     };
 }
