@@ -1,10 +1,12 @@
 # Extract aspect descriptions and render through promptyst.
-# Also generates .ai/AGENTS.md (hybrid: header + generated composability section).
+# Also generates .ai/AGENTS.md (hybrid: header + generated composability section)
+# and per-primitive-directory AGENTS.md files.
 #
 # Environment:
 #   DESCRIPTIONS_DIR — nix store path containing *.toml / *.yaml aspect descriptions
 #   RENDER_TEMPLATE — path to the render-aspect.typ template
 #   AGENTS_TEMPLATE — path to the render-agents-md.typ template
+#   PRIMITIVE_AGENTS_TEMPLATE — path to the render-primitive-agents-md.typ template
 #   PROMPTYST_PACKAGE_PATH — linkFarm path for @local/promptyst:0.1.0
 #   COMPOSABILITY_SCHEMA — nix store path to primitive-composability-schema.yaml
 #   AGENTS_HEADER — nix store path to AGENTS.md.header
@@ -75,3 +77,36 @@ let agents_md = $"($header)\n($generated)\n<!-- END GENERATED SECTION -->\n"
 
 $agents_md | save $"($out)/AGENTS.md"
 print $"Rendered ($out)/AGENTS.md"
+
+# ── Per-primitive AGENTS.md files ──
+
+let primitive_dirs = {
+  agent: "agents",
+  instruction: "instructions",
+  prompt: "prompts",
+  context: "context",
+  memory: "memory",
+  spec: "specs",
+  skill: "skills",
+}
+
+for entry in ($primitive_dirs | transpose key value) {
+  let prim = $entry.key
+  let dir = $entry.value
+
+  let prim_md = (
+    typst query
+      --root .
+      $env.PRIMITIVE_AGENTS_TEMPLATE
+      "<output>"
+      --field value
+      --one
+      --input $"schema-path=($staged_schema)"
+      --input $"primitive=($prim)"
+    | from json
+  )
+
+  mkdir $"($out)/primitive-agents/($dir)"
+  $prim_md | save $"($out)/primitive-agents/($dir)/AGENTS.md"
+  print $"Rendered ($out)/primitive-agents/($dir)/AGENTS.md"
+}

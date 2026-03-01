@@ -24,6 +24,7 @@
 
         RENDER_TEMPLATE = "./render-aspect.typ";
         AGENTS_TEMPLATE = "./render-agents-md.typ";
+        PRIMITIVE_AGENTS_TEMPLATE = "./render-primitive-agents-md.typ";
         PROMPTYST_PACKAGE_PATH = "${promptystPackagePath}";
         DESCRIPTIONS_DIR = "${descriptions}";
         COMPOSABILITY_SCHEMA = "${composabilitySchema}";
@@ -43,6 +44,13 @@
             install -m 644 "$f" "$target/.ai/output/$name"
             echo "Wrote .ai/output/$name"
           fi
+        done
+        # Per-primitive AGENTS.md files
+        for dir in ${contextDocs}/primitive-agents/*/; do
+          name=$(basename "$dir")
+          mkdir -p "$target/.ai/$name"
+          install -m 644 "$dir/AGENTS.md" "$target/.ai/$name/AGENTS.md"
+          echo "Wrote .ai/$name/AGENTS.md"
         done
       '';
     in
