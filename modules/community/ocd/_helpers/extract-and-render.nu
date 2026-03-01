@@ -1,28 +1,24 @@
 # Extract aspect descriptions and render through promptyst.
 #
 # Environment:
-#   ASPECT_NAMES — space-separated list of aspect names
-#   ASPECT_<UPPER_NAME> — TOML content for each aspect
+#   DESCRIPTIONS_DIR — nix store path containing *.toml aspect descriptions
 #   RENDER_TEMPLATE — path to the render-aspect.typ template
 #   PROMPTYST_PACKAGE_PATH — linkFarm path for @local/promptyst:0.1.0
 
 let out = $env.out
 mkdir $out
 
-let names = ($env.ASPECT_NAMES | split row " " | where {|it| ($it | str trim | str length) > 0 })
+let toml_files = (glob $"($env.DESCRIPTIONS_DIR)/*.toml")
 
-for name in $names {
-  let env_key = ($name | str upcase | str replace --all '.' '_' | str replace --all '-' '_')
-  let toml_content = ($env | get $"ASPECT_($env_key)" | str trim)
+for toml_file in $toml_files {
+  let name = ($toml_file | path parse | get stem)
 
-  if ($toml_content | str length) == 0 {
-    print $"Skipping ($name): empty description"
-    continue
+  # Stage TOML into working directory (within Typst's --root).
+  # nuenv may have already copied it from src; if not, read from the store.
+  let staged = $"./($name).toml"
+  if not ($staged | path exists) {
+    open $toml_file --raw | save $staged
   }
-
-  # Write staged TOML to working directory (within Typst's --root)
-  let toml_file = $"./($name).toml"
-  $toml_content | save $toml_file
 
   # Render through promptyst via typst query
   let md = (
@@ -33,11 +29,11 @@ for name in $names {
       "<output>"
       --field value
       --one
-      --input $"toml-path=($toml_file)"
+      --input $"toml-path=($staged)"
     | from json
   )
 
   $md | save $"($out)/($name).md"
-  cp $toml_file $"($out)/($name).toml"
+  open $staged --raw | save $"($out)/($name).toml"
   print $"Rendered ($out)/($name).md"
 }

@@ -1,0 +1,64 @@
+[aspect]
+id      = "ocd.networking"
+version = "0.1.0"
+role    = "OpenClaw-aware networking aspect"
+
+[context]
+id = "networking-ctx"
+
+[[context.entries]]
+key   = "firewall"
+value = "Ports 443 (HTTPS) and 22 (SSH) open externally"
+
+[[context.entries]]
+key   = "gateway-port"
+value = "18789 loopback-only (proxied by Caddy)"
+
+[[context.entries]]
+key   = "dhcp"
+value = "Enabled via lib.mkDefault (host-overridable)"
+
+[[constraints]]
+text     = "Gateway and webhook ports stay loopback-only"
+severity = "security"
+
+[[constraints]]
+text     = "All external traffic must route through Caddy reverse proxy"
+severity = "security"
+
+[[constraints]]
+text     = "SSH port must remain open for Determinate remote deploy"
+severity = "operational"
+
+[[steps]]
+text = "Enable NetworkManager for connection management"
+
+[[steps]]
+text = "Open firewall ports 443 (HTTPS) and 22 (SSH)"
+
+[[steps]]
+text = "Verify gateway port 18789 is not in allowedTCPPorts"
+
+[[inputs]]
+name        = "hostname"
+type        = "string"
+description = "Target machine hostname for network identity"
+
+[schema]
+id = "networking-output"
+
+[[schema.fields]]
+name        = "applied"
+type        = "bool"
+description = "Whether the networking config was applied"
+
+[[schema.fields]]
+name        = "firewall-status"
+type        = "enum(active|inactive)"
+description = "Current firewall state after activation"
+
+[[checkpoints]]
+id         = "verify-loopback"
+after-step = 3
+assertion  = "Gateway port 18789 is not in allowedTCPPorts"
+on-fail    = "halt"
