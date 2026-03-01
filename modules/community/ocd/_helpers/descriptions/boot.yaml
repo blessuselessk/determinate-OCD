@@ -1,0 +1,44 @@
+aspect:
+  id: "ocd.boot"
+  version: "0.1.0"
+  role: "Determinate-aware boot configuration aspect"
+
+context:
+  id: "boot-ctx"
+  entries:
+    - key: "bootloader"
+      value: "systemd-boot via lanzaboote (Secure Boot)"
+    - key: "init"
+      value: "Determinate system manager"
+
+constraints:
+  - text: "Secure Boot must remain enabled"
+    severity: "security"
+  - text: "Boot entries must be garbage-collected on rebuild"
+    severity: "operational"
+
+steps:
+  - text: "Configure systemd-boot as the bootloader"
+  - text: "Enable lanzaboote for Secure Boot signing"
+  - text: "Set configurationLimit to prune old generations"
+
+inputs:
+  - name: "configurationLimit"
+    type: "int"
+    description: "Maximum number of boot generations to keep"
+
+schema:
+  id: "boot-output"
+  fields:
+    - name: "secure-boot"
+      type: "bool"
+      description: "Whether Secure Boot signing is active"
+    - name: "generations"
+      type: "int"
+      description: "Number of boot generations retained"
+
+checkpoints:
+  - id: "verify-secure-boot"
+    after-step: 2
+    assertion: "lanzaboote is configured and signing keys are present"
+    on-fail: "halt"

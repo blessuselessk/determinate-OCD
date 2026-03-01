@@ -149,11 +149,11 @@
     "promptyst": {
       "flake": false,
       "locked": {
-        "lastModified": 1772363138,
-        "narHash": "sha256-FnQ5yEDJvJrbIPzAKy0AjHoejlNosAXB3GtSzzpMkUs=",
+        "lastModified": 1772371896,
+        "narHash": "sha256-ZehV+EyRWNQoVZV+NAenYJEZ2502w/vbkrNgxRIFP0g=",
         "owner": "blessuselessk",
         "repo": "promptyst",
-        "rev": "0ccd0ed210765a832554d1e9f8087ee957d6f956",
+        "rev": "7a9d0b6b7e9c428d57117f137731fa50e774f9c7",
         "type": "github"
       },
       "original": {
