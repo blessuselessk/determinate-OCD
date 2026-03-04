@@ -1,0 +1,54 @@
+{
+  // OCD tailnet policy — GP2 topology
+  // Fogell = gateway server, McLovin = client node
+
+  "groups": {
+    "group:admins": ["blessuselessk@github"],
+  },
+
+  "tagOwners": {
+    "tag:gateway": ["group:admins"],
+    "tag:client":  ["group:admins"],
+  },
+
+  "acls": [
+    // Admins can reach everything (SSH, debugging, etc.)
+    {
+      "action": "accept",
+      "src":    ["group:admins"],
+      "dst":    ["*:*"],
+    },
+
+    // Clients can reach the OpenClaw gateway port on gateway servers
+    {
+      "action": "accept",
+      "src":    ["tag:client"],
+      "dst":    ["tag:gateway:18789"],
+    },
+
+    // Gateway servers can reach clients (for push notifications, etc.)
+    {
+      "action": "accept",
+      "src":    ["tag:gateway"],
+      "dst":    ["tag:client:*"],
+    },
+  ],
+
+  // SSH access via Tailscale SSH (optional — if you enable tailscale SSH)
+  "ssh": [
+    {
+      "action": "accept",
+      "src":    ["group:admins"],
+      "dst":    ["tag:gateway"],
+      "users":  ["root", "lessuseless"],
+    },
+  ],
+
+  // DNS configuration
+  "nodeAttrs": [
+    {
+      "target": ["*"],
+      "attr":   ["funnel:off"],
+    },
+  ],
+}

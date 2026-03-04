@@ -5,7 +5,7 @@
   lessuseless.jujutsu.homeManager =
     { pkgs, ... }:
     let
-      jjui = inputs.jjui.packages.${pkgs.system}.jjui;
+      jjui = inputs.jjui.packages.${pkgs.stdenv.hostPlatform.system}.jjui;
       jjui-wrapped = pkgs.writeShellApplication {
         name = "jjui";
         text = ''
@@ -35,8 +35,8 @@
           enable = true;
 
           settings = {
-            user.name = "FIXME"; # TODO: set your name
-            user.email = "FIXME"; # TODO: set your email
+            user.name = "Ashley Barr";
+            user.email = "261668912+blessuselessk@users.noreply.github.com";
 
             revsets.log = "default()";
 

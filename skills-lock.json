@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "skills": {
+    "architecture-blueprint-generator": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "computedHash": "9b20f13d1d96ba1c2550e1ce535f932e943c42939d3fae906a9e0d6c1bfb471a"
+    },
+    "ast-grep": {
+      "source": "ast-grep/agent-skill",
+      "sourceType": "github",
+      "computedHash": "3bca45167617f547e97454ae16d271ba3aeb2550d89e6ef1942057bd122c0061"
+    },
+    "nix-best-practices": {
+      "source": "0xbigboss/claude-code",
+      "sourceType": "github",
+      "computedHash": "61556cac2f029a37e2884ec977aa06122c3b5595ee1f5a1ec254dfadafa61c10"
+    },
+    "suggest-awesome-github-copilot-skills": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "computedHash": "326ab63e60c60b2880781cc05e7289c911612e4d74c71b3bbaf8cad2c531ab8e"
+    },
+    "technology-stack-blueprint-generator": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "computedHash": "3819bfa893ce2aa75acb219991818e5daf75ce5d2b4cc6006f61c4e6dae085e4"
+    }
+  }
+}

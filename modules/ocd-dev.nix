@@ -1,10 +1,10 @@
-# Placeholder aspect for the ocd-dev host.
-# Replace with real config when deploying to actual hardware.
-{ den, ... }:
+{ den, ocd, ... }:
 {
   den.aspects.ocd-dev = {
     includes = [
       (den.provides.tty-autologin "admin")
+      ocd.agenix
+      ocd.determinate
     ];
     nixos = {
       boot.loader.grub.enable = false;
