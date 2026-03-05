@@ -47,6 +47,7 @@
           environmentFiles = [ config.age.secrets.openclaw-gateway-token.path ];
           config.gateway.mode = "local";
           config.channels.telegram = {
+            enabled = true;
             tokenFile = config.age.secrets.telegram-bot-token.path;
             allowFrom = [ 7917059187 ];
           };
