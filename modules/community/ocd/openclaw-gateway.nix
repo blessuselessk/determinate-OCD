@@ -18,6 +18,7 @@
       # Note: MemoryDenyWriteExecute omitted — Go runtime requires W+X memory
       systemd.services.openclaw-gateway.serviceConfig = {
         ProtectSystem = "strict";
+        ReadWritePaths = [ "/etc/openclaw" ];
         ProtectHome = "read-only";
         PrivateTmp = true;
         NoNewPrivileges = true;
