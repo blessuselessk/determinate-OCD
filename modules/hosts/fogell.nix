@@ -44,10 +44,8 @@
 
         # Gateway service config
         services.openclaw-gateway = {
-          environmentFiles = [
-            config.age.secrets.openclaw-gateway-token.path
-          ];
           config.gateway.mode = "local";
+          config.gateway.auth.tokenFile = config.age.secrets.openclaw-gateway-token.path;
           config.channels.telegram = {
             tokenFile = config.age.secrets.telegram-bot-token.path;
             allowFrom = [ 7917059187 ];
