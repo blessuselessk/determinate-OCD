@@ -7,7 +7,7 @@
   ocd.determinate = {
     nixos = {
       imports = [ inputs.determinate.nixosModules.default ];
-      determinateNix.enable = true;
+      determinate.enable = true;
     };
     darwin = {
       imports = [ inputs.determinate.darwinModules.default ];
