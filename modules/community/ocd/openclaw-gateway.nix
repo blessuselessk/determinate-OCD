@@ -14,9 +14,18 @@
         package = inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway;
       };
 
-      # Harden the gateway system service
-      # Note: MemoryDenyWriteExecute omitted — Go runtime requires W+X memory
-      # ExecStartPre ('+' = runs as root) fixes upstream module creating /etc/openclaw as root:root
+      # Harden the gateway system service.
+      # Note: MemoryDenyWriteExecute omitted — Go runtime requires W+X memory.
+      #
+      # ProtectSystem = "strict" makes /etc read-only for the service. The gateway uses an
+      # atomic write pattern (write temp file → rename) to update /etc/openclaw/openclaw.json
+      # at startup, so we must whitelist that directory with ReadWritePaths.
+      #
+      # The upstream nix-openclaw NixOS module creates /etc/openclaw owned by root:root
+      # (nix/modules/nixos/openclaw-gateway.nix, systemd.tmpfiles.rules). The gateway runs
+      # as the `openclaw` user, so it gets EACCES when creating temp files there. The
+      # ExecStartPre ('+' prefix = runs as root even for a non-root service) corrects the
+      # ownership before the gateway starts. This is a workaround for an upstream bug.
       systemd.services.openclaw-gateway.serviceConfig = {
         ExecStartPre = [ "+${pkgs.coreutils}/bin/chown openclaw:openclaw /etc/openclaw" ];
         ProtectSystem = "strict";
