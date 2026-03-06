@@ -14,14 +14,11 @@
         package = inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway;
       };
 
-      # Ensure /etc/openclaw is writable by the openclaw service user
-      systemd.tmpfiles.rules = [
-        "d /etc/openclaw 0750 openclaw openclaw -"
-      ];
-
       # Harden the gateway system service
       # Note: MemoryDenyWriteExecute omitted — Go runtime requires W+X memory
+      # ExecStartPre ('+' = runs as root) fixes upstream module creating /etc/openclaw as root:root
       systemd.services.openclaw-gateway.serviceConfig = {
+        ExecStartPre = [ "+${pkgs.coreutils}/bin/chown openclaw:openclaw /etc/openclaw" ];
         ProtectSystem = "strict";
         ReadWritePaths = [ "/etc/openclaw" ];
         ProtectHome = "read-only";
