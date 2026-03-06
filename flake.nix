@@ -9,10 +9,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:ryantm/agenix";
     };
-    ai-tools-flake = {
-      inputs.nixpkgs.follows = "nixpkgs";
-      url = "github:clempat/ai-tools-flake";
-    };
     darwin = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:nix-darwin/nix-darwin";
@@ -39,6 +35,10 @@
     };
     import-tree.url = "github:vic/import-tree";
     jjui.url = "github:idursun/jjui";
+    mcp-servers-nix = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:natsukium/mcp-servers-nix";
+    };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     nix-openclaw = {
       inputs.nixpkgs.follows = "nixpkgs";
