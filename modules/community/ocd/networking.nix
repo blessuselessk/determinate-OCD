@@ -4,8 +4,7 @@
     {
       networking.networkmanager.enable = true;
       networking.useDHCP = lib.mkDefault true;
-      # Public firewall: SSH only. All other services are Tailscale-only
-      # (tailscale0 is trusted via ocd.tailscale).
-      networking.firewall.allowedTCPPorts = [ 22 ];
+      # Public firewall: SSH and Mosh are managed by ocd.remote-access.
+      # All other services are Tailscale-only (tailscale0 trusted via ocd.tailscale).
     };
 }

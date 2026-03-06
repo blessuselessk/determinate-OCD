@@ -11,7 +11,7 @@
       ocd.determinate
       ocd.networking
       ocd.openclaw-gateway
-      ocd.tailscale
+      ocd.remote-access
     ];
     nixos =
       { config, ... }:
@@ -26,9 +26,6 @@
         networking.hostName = "fogell";
         networking.dhcpcd.extraConfig = "nohook hostname";
         system.stateVersion = "25.05";
-
-        # SSH for agenix identity + remote management
-        services.openssh.enable = true;
 
         # Gateway secrets — owned by the openclaw system user
         age.secrets.openclaw-gateway-token = {
