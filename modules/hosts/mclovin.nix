@@ -11,7 +11,7 @@
       ocd.determinate
       ocd.homebrew
       ocd.openclaw-app
-      ocd.tailscale
+      ocd.remote-access
     ];
     darwin = {
       system.stateVersion = 6;

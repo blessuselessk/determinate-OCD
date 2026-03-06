@@ -5,6 +5,8 @@
 {
   ocd.remote-access = {
     includes = [ ocd.tailscale ];
+
+    # NixOS: SSH hardening + mosh server + firewall.
     nixos =
       { ... }:
       {
@@ -22,6 +24,13 @@
 
         # SSH port co-located here since this aspect owns SSH.
         networking.firewall.allowedTCPPorts = [ 22 ];
+      };
+
+    # macOS: mosh client only.
+    darwin =
+      { pkgs, ... }:
+      {
+        environment.systemPackages = [ pkgs.mosh ];
       };
   };
 }
