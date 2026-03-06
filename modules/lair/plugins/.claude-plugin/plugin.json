@@ -1,0 +1,8 @@
+{
+  "name": "lair",
+  "version": "0.1.0",
+  "description": "AI agent extensions: jj workspace hooks, skills, and MCP configurations.",
+  "author": {
+    "name": "lessuseless"
+  }
+}
