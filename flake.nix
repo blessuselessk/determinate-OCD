@@ -9,6 +9,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:ryantm/agenix";
     };
+    ai-tools-flake = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:clempat/ai-tools-flake";
+    };
     darwin = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:nix-darwin/nix-darwin";

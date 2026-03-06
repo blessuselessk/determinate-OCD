@@ -4,5 +4,6 @@
   imports = [
     (inputs.den.namespace "ocd" true) # community — exposed at flake.denful.ocd
     (inputs.den.namespace "lessuseless" false) # personal
+    (inputs.den.namespace "thegreenroom" false) # LLM/agent aspects
   ];
 }
