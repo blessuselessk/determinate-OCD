@@ -8,6 +8,7 @@
   den.aspects.fogell = {
     includes = [
       ocd.agenix
+      ocd.autobots-rebuild
       ocd.determinate
       ocd.networking
       ocd.openclaw-gateway
