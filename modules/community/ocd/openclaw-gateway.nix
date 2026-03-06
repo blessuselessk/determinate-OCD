@@ -14,6 +14,11 @@
         package = inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway;
       };
 
+      # Ensure /etc/openclaw is writable by the openclaw service user
+      systemd.tmpfiles.rules = [
+        "d /etc/openclaw 0750 openclaw openclaw -"
+      ];
+
       # Harden the gateway system service
       # Note: MemoryDenyWriteExecute omitted — Go runtime requires W+X memory
       systemd.services.openclaw-gateway.serviceConfig = {
