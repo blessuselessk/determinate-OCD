@@ -31,7 +31,9 @@
       # Note: MemoryDenyWriteExecute omitted — Go runtime requires W+X memory.
       # ProtectSystem = "strict" makes /etc read-only for the service; ReadWritePaths
       # whitelists /etc/openclaw for the gateway's atomic config writes.
-      # tailscale serve needs the tailscale CLI in PATH
+      # tailscale serve: the gateway needs the CLI in PATH and operator
+      # permissions on the tailscale daemon socket.
+      services.tailscale.extraSetFlags = [ "--operator=openclaw" ];
       systemd.services.openclaw-gateway.path = [ pkgs.tailscale ];
 
       systemd.services.openclaw-gateway.serviceConfig = {
