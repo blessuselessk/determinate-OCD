@@ -663,15 +663,37 @@ echo "Generation confirmed and made permanent."
 | Tang server unreachable | Prerequisite fails. DMS fires → reboot → reverts. |
 | DMS killed by OOM | Mitigated by MemoryMax + OOMScoreAdjust. |
 
-## Relationship to autobots-rebuild
+## Integration with system.autoUpgrade
 
-`ocd.safe-upgrade` **replaces** `ocd.autobots-rebuild` for hosts with critical services. Other hosts can keep `autobots-rebuild`.
+`ocd.safe-upgrade` **layers on top of** `system.autoUpgrade` (provided by `ocd.autobots-rebuild`) rather than replacing it. The upgrade timer and build logic stay the same. safe-upgrade hooks into the post-activation via `OnSuccess=` on `nixos-upgrade.service`.
 
-```diff
-# fogell.nix includes
-- ocd.autobots-rebuild
-+ ocd.safe-upgrade
+Key setting:
+
+```nix
+system.autoUpgrade.allowReboot = false;
 ```
+
+Only the DMS should trigger reboots. If `allowReboot` is true, `autoUpgrade` will reboot on kernel changes, bypassing the entire verification flow.
+
+### How the pieces fit together
+
+```
+autobots-rebuild          safe-upgrade
+─────────────────         ──────────────────────────────────────
+system.autoUpgrade        nixos-upgrade.service OnSuccess=
+  builds & switches  ───→   safe-upgrade-verify.service
+                              arms DMS
+                              runs mechanical checks
+                              POSTs to /hooks/agent
+                              OpenClaw verifies + cancel-rollback
+```
+
+`ocd.safe-upgrade` adds:
+- `system.autoUpgrade.allowReboot = false`
+- `systemd.services.nixos-upgrade.unitConfig.OnSuccess = [ "safe-upgrade-verify.service" ]`
+- `safe-upgrade-verify.service` — arms DMS, runs mechanical checks, notifies OpenClaw
+- `safe-upgrade-dms.service` — the dead man's switch
+- `cancel-rollback` command in PATH
 
 ## Relationship to switch-fix.nix
 
