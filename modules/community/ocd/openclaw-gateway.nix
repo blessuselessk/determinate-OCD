@@ -12,22 +12,22 @@
       services.openclaw-gateway = {
         enable = true;
         package = inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway;
+
+        # The upstream module creates /etc/openclaw owned by root:root via tmpfiles.
+        # The gateway runs as the `openclaw` user and needs to write temp files there
+        # (atomic write pattern). This chown runs as root ('+' prefix) before each start.
+        #
+        # Must use the module's `execStartPre` option — setting
+        # systemd.services.*.serviceConfig.ExecStartPre directly gets overridden by
+        # the module's own empty-list default for that key.
+        execStartPre = [ "+${pkgs.coreutils}/bin/chown -R openclaw:openclaw /etc/openclaw" ];
       };
 
       # Harden the gateway system service.
       # Note: MemoryDenyWriteExecute omitted — Go runtime requires W+X memory.
-      #
-      # ProtectSystem = "strict" makes /etc read-only for the service. The gateway uses an
-      # atomic write pattern (write temp file → rename) to update /etc/openclaw/openclaw.json
-      # at startup, so we must whitelist that directory with ReadWritePaths.
-      #
-      # The upstream nix-openclaw NixOS module creates /etc/openclaw owned by root:root
-      # (nix/modules/nixos/openclaw-gateway.nix, systemd.tmpfiles.rules). The gateway runs
-      # as the `openclaw` user, so it gets EACCES when creating temp files there. The
-      # ExecStartPre ('+' prefix = runs as root even for a non-root service) corrects the
-      # ownership before the gateway starts. This is a workaround for an upstream bug.
+      # ProtectSystem = "strict" makes /etc read-only for the service; ReadWritePaths
+      # whitelists /etc/openclaw for the gateway's atomic config writes.
       systemd.services.openclaw-gateway.serviceConfig = {
-        ExecStartPre = [ "+${pkgs.coreutils}/bin/chown openclaw:openclaw /etc/openclaw" ];
         ProtectSystem = "strict";
         ReadWritePaths = [ "/etc/openclaw" ];
         ProtectHome = "read-only";

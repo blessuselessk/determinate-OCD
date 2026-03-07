@@ -44,6 +44,7 @@
         services.openclaw-gateway = {
           environmentFiles = [ config.age.secrets.openclaw-gateway-token.path ];
           config.gateway.mode = "local";
+          config.gateway.bind = "tailnet"; # Listen on Tailscale interface for mclovin
           config.channels.telegram = {
             enabled = true;
             tokenFile = config.age.secrets.telegram-bot-token.path;
