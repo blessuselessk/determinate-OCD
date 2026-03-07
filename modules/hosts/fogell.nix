@@ -45,6 +45,10 @@
           environmentFiles = [ config.age.secrets.openclaw-gateway-token.path ];
           config.gateway.mode = "local";
           config.gateway.bind = "tailnet"; # Listen on Tailscale interface for mclovin
+          config.gateway.controlUi.allowedOrigins = [
+            "https://fogell:18789"
+            "https://100.98.82.19:18789"
+          ];
           config.channels.telegram = {
             enabled = true;
             tokenFile = config.age.secrets.telegram-bot-token.path;
