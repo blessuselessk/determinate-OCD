@@ -33,7 +33,7 @@
       # whitelists /etc/openclaw for the gateway's atomic config writes.
       systemd.services.openclaw-gateway.serviceConfig = {
         ProtectSystem = "strict";
-        ReadWritePaths = [ "/etc/openclaw" ];
+        ReadWritePaths = [ "/etc/openclaw" "/var/lib/openclaw" ];
         ProtectHome = "read-only";
         PrivateTmp = true;
         NoNewPrivileges = true;

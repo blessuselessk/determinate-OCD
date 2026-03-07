@@ -56,6 +56,7 @@
           environmentFiles = [ config.age.secrets.openclaw-gateway-token.path ];
           config.gateway.mode = "local";
           config.gateway.bind = "lan"; # 0.0.0.0 — reachable via SSH tunnel (localhost) and Tailscale
+          config.gateway.tailscale.mode = "serve"; # HTTPS via tailscale serve for device pairing
           config.gateway.controlUi.allowedOrigins = [
             "https://fogell:18789"
             "https://100.98.82.19:18789"
