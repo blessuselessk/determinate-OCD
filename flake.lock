@@ -532,6 +532,26 @@
         "type": "github"
       }
     },
+    "nix-utils": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1764614525,
+        "narHash": "sha256-FIxdC7FGM3tcHrgzK9z7AlYrPpn+m1TLwkUcIVkmoqc=",
+        "owner": "femtodata",
+        "repo": "nix-utils",
+        "rev": "51a56f1aec4897618c5e3b1b9c14cb5af00293b5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "femtodata",
+        "repo": "nix-utils",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1761597516,
@@ -641,15 +661,16 @@
     },
     "nixpkgs_5": {
       "locked": {
-        "lastModified": 1772198003,
-        "narHash": "sha256-UCaQQ8zmHUocQIgCl+53Jj6NuwqrVKtmv7obE9r6wnw=",
-        "rev": "dd9b079222d43e1943b6ebd802f04fd959dc8e61",
+        "lastModified": 1772598333,
+        "narHash": "sha256-YaHht/C35INEX3DeJQNWjNaTcPjYmBwwjFJ2jdtr+5U=",
+        "rev": "fabb8c9deee281e50b1065002c9828f2cf7b2239",
+        "revCount": 908740,
         "type": "tarball",
-        "url": "https://releases.nixos.org/nixos/unstable/nixos-26.05pre955442.dd9b079222d4/nixexprs.tar.xz"
+        "url": "https://api.flakehub.com/f/pinned/NixOS/nixpkgs/0.2511.908740%2Brev-fabb8c9deee281e50b1065002c9828f2cf7b2239/019cb9f7-a916-7359-a77d-0a005d3360ab/source.tar.gz"
       },
       "original": {
         "type": "tarball",
-        "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz"
+        "url": "https://flakehub.com/f/NixOS/nixpkgs/0"
       }
     },
     "nixpkgs_6": {
@@ -718,6 +739,7 @@
         "mcp-servers-nix": "mcp-servers-nix",
         "nix-homebrew": "nix-homebrew",
         "nix-openclaw": "nix-openclaw",
+        "nix-utils": "nix-utils",
         "nixpkgs": "nixpkgs_5",
         "nixpkgs-lib": [
           "nixpkgs"

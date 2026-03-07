@@ -44,7 +44,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:arubis/nix-openclaw/fix/rolldown-sandbox-shim";
     };
-    nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz";
+    nix-utils = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:femtodata/nix-utils";
+    };
+    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0";
     nixpkgs-lib.follows = "nixpkgs";
     nuenv.url = "github:xav-ie/nuenv";
     promptyst = {

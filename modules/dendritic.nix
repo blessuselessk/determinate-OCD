@@ -6,7 +6,7 @@
   ];
 
   flake-file.inputs = {
-    nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz";
+    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0";
     den.url = "github:vic/den";
     flake-file.url = "github:vic/flake-file";
   };
