@@ -14,6 +14,7 @@
       ocd.openclaw-gateway
       ocd.remote-access
       ocd.switch-fix
+      ocd.tailguard
     ];
     nixos =
       { config, ... }:
@@ -40,6 +41,16 @@
           owner = "openclaw";
           mode = "0400";
         };
+        age.secrets.wg-warp-key = {
+          file = ../lessuseless/secrets/wg-warp-key.age;
+          mode = "0600";
+        };
+
+        # Tailguard: WARP exit node IPs from wgcf-profile.conf
+        networking.wireguard.interfaces.wg-warp.ips = [
+          "172.16.0.2/32"
+          "2606:4700:110:8b50:7d95:d334:bcfb:f6b1/128"
+        ];
 
         # Gateway service config
         services.openclaw-gateway = {

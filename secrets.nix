@@ -11,4 +11,8 @@ in
     lessuseless
     fogell
   ];
+  "modules/lessuseless/secrets/wg-warp-key.age".publicKeys = [
+    lessuseless
+    fogell
+  ];
 }

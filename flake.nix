@@ -11,10 +11,10 @@
     };
     darwin = {
       inputs.nixpkgs.follows = "nixpkgs";
-      url = "github:nix-darwin/nix-darwin";
+      url = "https://flakehub.com/f/nix-darwin/nix-darwin/0.2511.*";
     };
     den.url = "github:vic/den";
-    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
     flake-aspects.url = "github:vic/flake-aspects";
     flake-file.url = "github:vic/flake-file";
     flake-parts = {

@@ -2,7 +2,7 @@
 # Note: do NOT follow nixpkgs — Determinate pins its own for cache hits.
 { inputs, ... }:
 {
-  flake-file.inputs.determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
+  flake-file.inputs.determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
 
   ocd.determinate = {
     nixos = {
@@ -11,6 +11,7 @@
     };
     darwin = {
       imports = [ inputs.determinate.darwinModules.default ];
+      nix.enable = false;
       determinateNix.enable = true;
     };
   };
