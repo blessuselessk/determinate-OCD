@@ -29,7 +29,7 @@ in
         mtu = warpMTU;
         privateKeyFile = config.age.secrets.wg-warp-key.path;
         fwMark = warpMark;
-        table = "off";
+        table = "${toString warpTable}";
 
         peers = [
           {
