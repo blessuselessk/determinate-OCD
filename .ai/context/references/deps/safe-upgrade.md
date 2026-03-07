@@ -53,6 +53,14 @@ Core principle: **activate first, confirm later, reboot if unconfirmed**.
          │
          ▼
   ┌──────────────────────┐
+  │ Prerequisites        │  Environmental attestation.
+  │ (optional)           │  Tang reachable? TPM valid? Tailscale up?
+  │                      │  Shamir threshold: N-of-M must pass.
+  └──────┬───────┬───────┘
+       pass    fail → (DMS fires → reboot → reverts)
+         │
+         ▼
+  ┌──────────────────────┐
   │ Disarm DMS           │
   │ nixos-rebuild switch │  Generation is now permanent.
   └──────────────────────┘
@@ -209,6 +217,158 @@ This enables flows like:
 1. Agent self-test passes (command mode) → confirms the agent is functional
 2. Message the user on WhatsApp (channel mode) → "Upgrade on fogell confirmed by agent. All checks passed." → informational, or user can REJECT to force rollback
 
+## Prerequisites (environmental attestation)
+
+Even if a confirmation channel says CONFIRM, `cancel-rollback` should not execute unless the environment itself attests that it's safe. This defends against a compromised confirmation channel — an attacker who gains access to your Telegram bot, WhatsApp, or webhook endpoint cannot force the system to accept a malicious generation if the environmental checks fail.
+
+Prerequisites run **after** confirmation succeeds but **before** `cancel-rollback` executes. They are the final gate.
+
+### Threat model
+
+An attacker who:
+- Compromises a Telegram/WhatsApp/Slack bot token
+- Gains access to a webhook endpoint
+- Intercepts or spoofs a confirmation message
+
+...can send a valid CONFIRM. Without prerequisites, this would cause the system to make a potentially malicious generation permanent. With prerequisites, the attacker would also need to satisfy environmental conditions they can't easily fake (network topology, hardware TPM state, VPN connectivity).
+
+### Prerequisite types
+
+#### `tang` — Network-Bound Attestation
+
+Uses Clevis/Tang to verify the machine is on the expected network. The Tang server must be reachable and the cryptographic exchange must succeed.
+
+```nix
+{ type = "tang"; url = "http://tang.tailnet:7654"; }
+```
+
+Under the hood: runs `clevis decrypt tang '{"url": "..."}' < /path/to/test-token.jwe` and checks for success. The test token is a small JWE blob encrypted to the Tang server during setup — if it decrypts, the server is reachable and authentic.
+
+Requires:
+- A Tang server running on the trusted network (can be another NixOS host with `services.tang.enable = true`)
+- `boot.initrd.clevis` is NOT required — this uses Clevis as a runtime attestation tool, not for boot-time disk decryption (though they can coexist)
+- The `clevis` package available on the host
+
+#### `tpm` — Hardware Integrity Attestation
+
+Verify that TPM PCR measurements match expected values. Ensures the firmware, bootloader, kernel, and system configuration haven't been tampered with.
+
+```nix
+{ type = "tpm"; pcrs = "0+7+12"; }
+```
+
+Under the hood: reads PCR values via `tpm2_pcrread` and compares against enrolled expectations, or uses `systemd-cryptenroll`-style verification.
+
+#### `command` — Arbitrary Attestation
+
+Run any command. Exits 0 = attested. Maximum flexibility.
+
+```nix
+{ type = "command"; command = "tailscale status --json | jq -e '.Self.Online'"; }
+{ type = "command"; command = "test -f /run/secrets/deployment-authorized"; }
+{ type = "command"; command = "curl -sf http://internal-ca:8200/v1/sys/health"; }
+```
+
+Examples:
+- Tailscale is connected (VPN integrity)
+- A specific secret file exists (manual authorization flag)
+- An internal service is reachable (network topology)
+- Time-of-day is within a maintenance window
+- A hardware security key is present
+
+#### `clevis-sss` — Shamir Secret Sharing (combining pins)
+
+Use Clevis SSS to combine multiple attestation pins with a threshold. This is Clevis's native composition mechanism.
+
+```nix
+{
+  type = "clevis-sss";
+  threshold = 2;
+  pins = {
+    tpm2 = {};
+    tang = [
+      { url = "http://tang1.tailnet:7654"; }
+      { url = "http://tang2.tailnet:7654"; }
+    ];
+  };
+}
+```
+
+This means: 2 of 3 pins must succeed (TPM + either Tang server, or both Tang servers).
+
+### Configuration
+
+```nix
+ocd.safe-upgrade.confirm.prerequisites = [
+  { type = "tang"; url = "http://tang.tailnet:7654"; }
+  { type = "command"; command = "tailscale status --json | jq -e '.Self.Online'"; }
+];
+
+# Shamir-style threshold: how many must pass (default: all)
+ocd.safe-upgrade.confirm.prerequisiteThreshold = null;  # null = all must pass
+# Or: ocd.safe-upgrade.confirm.prerequisiteThreshold = 2;  # 2-of-N
+```
+
+When `prerequisiteThreshold` is null (default), ALL prerequisites must pass. Set it to an integer for N-of-M semantics.
+
+### Execution flow
+
+```
+Confirmation says CONFIRM
+         │
+         ▼
+  Run prerequisite checks
+         │
+         ├─ tang: clevis decrypt succeeds? ✓
+         ├─ command: tailscale online? ✓
+         ├─ tpm: PCRs match? ✗
+         │
+  Threshold: 2 of 3 → 2 passed → ✓ ATTESTED
+         │
+         ▼
+  cancel-rollback executes
+```
+
+If the threshold is not met:
+```
+  Threshold: 2 of 3 → 1 passed → ✗ NOT ATTESTED
+         │
+         ▼
+  Log: "Prerequisites not met (1/2 threshold). Refusing confirmation."
+  DMS continues → reboot → reverts
+```
+
+### Tang server setup (NixOS)
+
+A Tang server can run on any trusted host. For this project, it could run on mclovin (your local machine) or a dedicated server on the Tailscale network:
+
+```nix
+# On the Tang server host
+services.tang = {
+  enable = true;
+  ipAddressAllow = "100.0.0.0/8";  # Tailscale CGNAT range only
+  listenStream = [ "7654" ];
+};
+networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ 7654 ];
+```
+
+```nix
+# On fogell (the client)
+environment.systemPackages = [ pkgs.clevis pkgs.tang ];
+```
+
+During initial setup, create the attestation token:
+```bash
+echo "safe-upgrade-attestation" | clevis encrypt tang '{"url": "http://mclovin:7654"}' > /etc/safe-upgrade/tang-token.jwe
+```
+
+At prerequisite check time:
+```bash
+clevis decrypt < /etc/safe-upgrade/tang-token.jwe > /dev/null 2>&1
+```
+
+If mclovin is reachable on Tailscale → decryption succeeds → prerequisite passes. If fogell is somehow moved off the Tailscale network or mclovin is down → fails → confirmation refused.
+
 ## Module interface
 
 ```nix
@@ -285,13 +445,61 @@ options.ocd.safe-upgrade = {
       default = null;
       description = "Ordered list of confirmation steps for 'pipeline' mode.";
     };
+
+    prerequisites = mkOption {
+      type = types.listOf (types.submodule {
+        options = {
+          type = mkOption {
+            type = types.enum [ "tang" "tpm" "command" "clevis-sss" ];
+          };
+          url = mkOption {
+            type = types.nullOr types.str;
+            default = null;
+            description = "Tang server URL (for 'tang' type).";
+          };
+          tokenFile = mkOption {
+            type = types.nullOr types.path;
+            default = null;
+            description = "Path to JWE token file for Tang attestation.";
+          };
+          pcrs = mkOption {
+            type = types.nullOr types.str;
+            default = null;
+            description = "TPM PCR selection (for 'tpm' type). e.g. '0+7+12'.";
+          };
+          command = mkOption {
+            type = types.nullOr types.str;
+            default = null;
+            description = "Shell command for 'command' type.";
+          };
+          threshold = mkOption {
+            type = types.nullOr types.int;
+            default = null;
+            description = "Shamir threshold for 'clevis-sss' type.";
+          };
+          pins = mkOption {
+            type = types.nullOr types.attrs;
+            default = null;
+            description = "Clevis SSS pin configuration.";
+          };
+        };
+      });
+      default = [];
+      description = "Environmental attestation checks that must pass before cancel-rollback executes.";
+    };
+
+    prerequisiteThreshold = mkOption {
+      type = types.nullOr types.int;
+      default = null;
+      description = "How many prerequisites must pass. null = all. Integer = N-of-M (Shamir-style).";
+    };
   };
 };
 ```
 
 ## Host wiring examples
 
-### fogell (critical — agent + human notification)
+### fogell (critical — agent + human notification + attestation)
 
 ```nix
 ocd.safe-upgrade = {
@@ -317,6 +525,18 @@ ocd.safe-upgrade = {
         };
       }
     ];
+
+    # Environmental attestation: even if confirmation succeeds,
+    # cancel-rollback only executes if the environment checks out.
+    prerequisites = [
+      # Must be on the Tailscale network (Tang server on mclovin)
+      { type = "tang"; url = "http://mclovin:7654";
+        tokenFile = config.age.secrets.tang-attestation-token.path; }
+      # Tailscale itself must be connected
+      { type = "command";
+        command = "tailscale status --json | jq -e '.Self.Online'"; }
+    ];
+    # Both must pass (default: all)
   };
 };
 ```
@@ -387,7 +607,12 @@ echo "=== Mechanical checks passed ==="
 # Run confirmation (mode-dependent, generated by the module)
 ${confirmScript}
 
-echo "=== Confirmed. Making generation permanent. ==="
+echo "=== Confirmation received. Running prerequisite attestation. ==="
+# Environmental checks: Tang reachable? TPM valid? Tailscale up?
+# Generated from cfg.confirm.prerequisites. Threshold logic applied.
+${prerequisiteScript}
+
+echo "=== Prerequisites attested. Making generation permanent. ==="
 systemctl stop safe-upgrade-dms.service
 nixos-rebuild switch --flake "$FLAKE"
 ```
@@ -405,8 +630,16 @@ OOMScoreAdjust=-900
 
 ### cancel-rollback (installed in PATH for manual mode)
 
+Prerequisites are enforced here too — even a manual `cancel-rollback` must pass attestation.
+
 ```bash
 #!/usr/bin/env bash
+set -euo pipefail
+
+echo "Running prerequisite attestation..."
+${prerequisiteScript}
+
+echo "Prerequisites passed. Disarming DMS and making permanent."
 systemctl stop safe-upgrade-dms.service
 nixos-rebuild switch --flake "${cfg.flake}"
 echo "Generation confirmed and made permanent."
@@ -420,11 +653,14 @@ echo "Generation confirmed and made permanent."
 | Activation fails | Script exits before DMS. No change. |
 | Service crashes after activation | Mechanical check fails. DMS fires → reboot → reverts. |
 | Mechanical checks pass, agent broken | Confirmation times out. DMS fires → reboot → reverts. |
-| Mechanical checks pass, agent confirms | DMS disarmed. `nixos-rebuild switch`. Permanent. |
+| Mechanical + confirmation pass, prerequisites fail | Attestation fails. DMS fires → reboot → reverts. |
+| All layers pass | DMS disarmed. `nixos-rebuild switch`. Permanent. |
+| Confirmation channel compromised | Attacker sends CONFIRM, but prerequisites (Tang/TPM/Tailscale) fail → reboot → reverts. |
 | Confirmation rejects | Immediate reboot → reverts. |
 | Health check script itself crashes | DMS remains armed → reboot → reverts. |
 | Power loss during check window | Reboot → last `switch`ed generation (test never registered). |
 | Messaging API down | Notification fails. DMS fires → reboot → reverts. |
+| Tang server unreachable | Prerequisite fails. DMS fires → reboot → reverts. |
 | DMS killed by OOM | Mitigated by MemoryMax + OOMScoreAdjust. |
 
 ## Relationship to autobots-rebuild
