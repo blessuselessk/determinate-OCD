@@ -9,6 +9,10 @@
       nixpkgs.overlays = [ inputs.nix-openclaw.overlays.default ];
       imports = [ inputs.nix-openclaw.nixosModules.openclaw-gateway ];
 
+      environment.systemPackages = [
+        inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway
+      ];
+
       services.openclaw-gateway = {
         enable = true;
         package = inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway;
