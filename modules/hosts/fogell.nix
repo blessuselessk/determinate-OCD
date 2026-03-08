@@ -17,7 +17,7 @@
       ocd.tailguard
     ];
     nixos =
-      { config, ... }:
+      { config, pkgs, ... }:
       {
         # EC2 Graviton instance — boot config
         boot.loader.grub.enable = false;
@@ -53,8 +53,17 @@
 
         # Gateway service config
         services.openclaw-gateway = {
-          environmentFiles = [ config.age.secrets.openclaw-gateway-token.path ];
+          # Convert raw agenix secret to KEY=VALUE env file, then load it
+          execStartPre = [
+            "+${pkgs.writeShellScript "openclaw-gateway-env" ''
+              printf 'OPENCLAW_GATEWAY_TOKEN=%s\n' "$(cat ${config.age.secrets.openclaw-gateway-token.path})" > /run/openclaw-gateway.env
+              chmod 400 /run/openclaw-gateway.env
+              chown openclaw:openclaw /run/openclaw-gateway.env
+            ''}"
+          ];
+          environmentFiles = [ "/run/openclaw-gateway.env" ];
           config.gateway.mode = "local";
+          config.gateway.auth.mode = "token"; # actual token from OPENCLAW_GATEWAY_TOKEN env var
           config.gateway.tailscale.mode = "serve"; # HTTPS via tailscale serve — handles TLS + device pairing
           config.gateway.controlUi.allowedOrigins = [
             "https://fogell:18789"
