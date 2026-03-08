@@ -72,7 +72,7 @@
         # Gateway service config
         services.openclaw-gateway = {
           environmentFiles = [ "/run/openclaw-gateway.env" ];
-          config.gateway.mode = "serve"; 
+          config.gateway.mode = "local";
           config.gateway.bind = "loopback";
           config.gateway.auth.mode = "token"; # actual token from OPENCLAW_GATEWAY_TOKEN env var
           config.gateway.tailscale.mode = "serve"; # HTTPS via tailscale serve — handles TLS + device pairing
