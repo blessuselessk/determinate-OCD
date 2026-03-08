@@ -51,22 +51,33 @@
           "172.16.0.2/32"
         ];
 
-        # Gateway service config
-        services.openclaw-gateway = {
-          # Convert raw agenix secret to KEY=VALUE env file, then load it
-          execStartPre = [
-            "+${pkgs.writeShellScript "openclaw-gateway-env" ''
+        # Oneshot service creates env file from agenix secret BEFORE gateway starts.
+        # (EnvironmentFile= is read before ExecStartPre, so we can't do it inline.)
+        systemd.services.openclaw-gateway-env = {
+          description = "Create openclaw gateway env file from agenix secret";
+          before = [ "openclaw-gateway.service" ];
+          requiredBy = [ "openclaw-gateway.service" ];
+          after = [ "agenix.service" ];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = pkgs.writeShellScript "openclaw-gateway-env" ''
               printf 'OPENCLAW_GATEWAY_TOKEN=%s\n' "$(cat ${config.age.secrets.openclaw-gateway-token.path})" > /run/openclaw-gateway.env
               chmod 400 /run/openclaw-gateway.env
               chown openclaw:openclaw /run/openclaw-gateway.env
-            ''}"
-          ];
+            '';
+          };
+        };
+
+        # Gateway service config
+        services.openclaw-gateway = {
           environmentFiles = [ "/run/openclaw-gateway.env" ];
-          config.gateway.mode = "local";
+          config.gateway.mode = "serve"; 
+          config.gateway.bind = "loopback";
           config.gateway.auth.mode = "token"; # actual token from OPENCLAW_GATEWAY_TOKEN env var
           config.gateway.tailscale.mode = "serve"; # HTTPS via tailscale serve — handles TLS + device pairing
           config.gateway.controlUi.allowedOrigins = [
-            "https://fogell:18789"
+            "https://fogell.serval-minor.ts.net:18789"
             "https://100.98.82.19:18789"
             "https://localhost:18789"
             "https://127.0.0.1:18789"

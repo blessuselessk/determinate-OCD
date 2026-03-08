@@ -11,11 +11,13 @@
 
       environment.systemPackages = [
         inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway
+        pkgs.lsof
       ];
-
+       
       services.openclaw-gateway = {
         enable = true;
         package = inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway;
+        config.gateway.auth.allowTailscale = true;
 
         # The upstream module creates /etc/openclaw owned by root:root via tmpfiles.
         # The gateway runs as the `openclaw` user and needs to write temp files there
