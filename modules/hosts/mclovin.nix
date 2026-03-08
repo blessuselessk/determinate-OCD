@@ -10,14 +10,14 @@
       ocd.agenix
       ocd.determinate
       ocd.homebrew
-      ocd.openclaw-app
+      ocd.openclaw
       ocd.remote-access
     ];
     darwin = {
       system.stateVersion = 6;
       security.pam.services.sudo_local.touchIdAuth = true;
       home-manager.useGlobalPkgs = true;
-      home-manager.backupFileExtension = "before-nix-darwin";
+      home-manager.backupFileExtension = "hm-bak";
     };
     homeManager =
       { lib, ... }:

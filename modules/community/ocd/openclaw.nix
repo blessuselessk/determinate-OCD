@@ -23,11 +23,18 @@
       {
         imports = [ inputs.nix-openclaw.homeManagerModules.openclaw ];
         programs.openclaw = {
-          enable = true;
           package = inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw;
-          config.gateway = {
-            mode = "remote";
-            url = "https://fogell:18789"; # Tailscale MagicDNS
+          exposePluginPackages = false; # batteries-included package already bundles plugin CLIs
+          # Use instances.default (not enable=true) to go through the module type system.
+          # The upstream defaultInstance is missing appDefaults.nixMode.
+          instances.default = {
+            enable = true;
+            launchd.enable = false; # GP2: Mac is a node, gateway runs on fogell
+            config.gateway = {
+              mode = "remote";
+              remote.url = "wss://fogell.serval-minor.ts.net"; # Tailscale Serve (HTTPS/443 → loopback:18789)
+              # Token: OPENCLAW_GATEWAY_TOKEN env var, read from ~/.openclaw/.env at runtime
+            };
           };
         };
       };

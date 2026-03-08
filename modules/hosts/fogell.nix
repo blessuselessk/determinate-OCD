@@ -74,11 +74,13 @@
           environmentFiles = [ "/run/openclaw-gateway.env" ];
           config.gateway.mode = "local";
           config.gateway.bind = "loopback";
-          config.gateway.auth.mode = "token"; # actual token from OPENCLAW_GATEWAY_TOKEN env var
-          config.gateway.tailscale.mode = "serve"; # HTTPS via tailscale serve — handles TLS + device pairing
+          config.gateway.auth.mode = "token"; # API endpoints still require token (from OPENCLAW_GATEWAY_TOKEN env var)
+          config.gateway.auth.allowTailscale = true; # Tailscale identity headers auth for Control UI + WebSocket via Serve
+          config.gateway.tailscale.mode = "serve"; # HTTPS via tailscale serve — handles TLS + device identity
+          config.gateway.controlUi.dangerouslyDisableDeviceAuth = true; # safe: gateway secured by Tailscale + loopback
           config.gateway.controlUi.allowedOrigins = [
-            "https://fogell.serval-minor.ts.net:18789"
-            "https://100.98.82.19:18789"
+            "https://fogell.serval-minor.ts.net"
+            "https://100.98.82.19"
             "https://localhost:18789"
             "https://127.0.0.1:18789"
           ];

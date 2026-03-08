@@ -31,7 +31,7 @@ When creating or modifying aspects, follow [dendritic instructions](/.github/ins
 
 - **New aspect**: Create `modules/community/ocd/<name>.nix` with `ocd.<name>.<class> = { ... };`
 - **New host**: Add `den.hosts.<system>.<hostname>` in `modules/<infra>/hosts.nix`
-- **New secret**: Encrypted file in `modules/<user>/secrets/`, wire via `config.age.secrets.<name>.path`
+- **New secret**: Encrypted file in `modules/<user>/secrets/`, wire via `config.age.secrets.<name>.path`. Edit secrets with `ragenix` (or `nix run nixpkgs#ragenix -- ...` if not in PATH)
 - **Build (CI)**: Push to GitHub — GHA runs `nix flake check` and `nix build`
 - **Build ISO**: `nix build .#nixosConfigurations.iso.config.system.build.isoImage`
 - **Remote deploy**: `fh apply nixos "org/flake/*#nixosConfigurations.<hostname>"`
@@ -63,3 +63,7 @@ The `lessuseless.jujutsu` aspect (`modules/lessuseless/jujutsu.nix`) defines the
 | `tug` | `jj bookmark move --from closest_bookmark(@-) --to @-` | Advance nearest bookmark to parent |
 
 Custom revset aliases: `trunk()` = `main@origin`, `compared_to_trunk()`, `default()`, `recent()` (last week), `closest_bookmark(to)`.
+
+## OpenClaw
+
+See [modules/community/ocd/CLAUDE.md](modules/community/ocd/CLAUDE.md) for OpenClaw troubleshooting and configuration guidance.
