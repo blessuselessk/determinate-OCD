@@ -105,7 +105,7 @@
             f"{T5}}};\n"
             f"{T5}const _v3 = buildDeviceAuthPayload({{..._payloadArgs, "
             "platform: connectParams.client.platform, "
-            "deviceFamily: connectParams.client.deviceFamily}});\n"
+            "deviceFamily: connectParams.client.deviceFamily});\n"
             f"{T5}const _v2 = buildDeviceAuthPayload(_payloadArgs);\n"
             f"{T5}const payload = verifyDeviceSignature(device.publicKey, _v3, device.signature)"
             " ? _v3 : _v2;\n"
