@@ -33,6 +33,7 @@
             config.gateway = {
               mode = "remote";
               remote.url = "wss://fogell.serval-minor.ts.net"; # Tailscale Serve (HTTPS/443 → loopback:18789)
+              remote.transport = "direct"; # Direct WSS via Tailscale Serve, no SSH tunnel needed
               # Token: OPENCLAW_GATEWAY_TOKEN env var, read from ~/.openclaw/.env at runtime
             };
           };
