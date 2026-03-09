@@ -74,9 +74,10 @@
           environmentFiles = [ "/run/openclaw-gateway.env" ];
           config.gateway.mode = "local";
           config.gateway.bind = "loopback";
-          config.gateway.auth.mode = "token"; # API endpoints still require token (from OPENCLAW_GATEWAY_TOKEN env var)
-          config.gateway.auth.allowTailscale = true; # Tailscale identity headers auth for Control UI + WebSocket via Serve
-          config.gateway.trustedProxies = [ "127.0.0.1" ]; # Tailscale Serve is a local reverse proxy — trust its x-forwarded-for for local pairing auto-approve
+          config.gateway.auth.mode = "trusted-proxy"; # Tailscale Serve handles identity — bypasses device signature checks
+          config.gateway.auth.allowTailscale = true; # Tailscale identity headers as auth
+          config.gateway.auth.trustedProxy.userHeader = "Tailscale-User-Login"; # Tailscale Serve passes identity headers
+          config.gateway.trustedProxies = [ "127.0.0.1" ]; # Tailscale Serve is a local reverse proxy
           config.gateway.tailscale.mode = "serve"; # HTTPS via tailscale serve — handles TLS + device identity
           config.gateway.controlUi.dangerouslyDisableDeviceAuth = true; # safe: gateway secured by Tailscale + loopback
           config.gateway.controlUi.allowedOrigins = [
