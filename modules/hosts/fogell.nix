@@ -20,9 +20,9 @@
     nixos =
       { config, pkgs, ... }:
       {
-        # EC2 Graviton instance — boot config
-        boot.loader.grub.enable = false;
-        boot.loader.systemd-boot.enable = false;
+        # EC2 instance — GRUB on the root device
+        boot.loader.grub.enable = true;
+        boot.loader.grub.device = "/dev/xvda";
         fileSystems."/" = {
           device = "/dev/xvda1";
           fsType = "ext4";
