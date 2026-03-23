@@ -10,6 +10,7 @@
       ocd.agenix
       ocd.determinate
       ocd.homebrew
+      ocd.nodocs
       ocd.openclaw
       ocd.remote-access
     ];
@@ -17,6 +18,7 @@
       system.stateVersion = 6;
       security.pam.services.sudo_local.touchIdAuth = true;
       home-manager.useGlobalPkgs = true;
+      home-manager.useUserPackages = true;
       home-manager.backupFileExtension = "hm-bak";
     };
     homeManager =
@@ -29,6 +31,7 @@
   den.aspects.lessuseless = {
     includes = [
       den.provides.primary-user
+      lessuseless.direnv
       lessuseless.gh
       lessuseless.git
       lessuseless.jujutsu

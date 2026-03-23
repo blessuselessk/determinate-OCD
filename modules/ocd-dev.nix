@@ -5,6 +5,7 @@
       (den.provides.tty-autologin "admin")
       ocd.agenix
       ocd.determinate
+      ocd.nodocs
     ];
     nixos = {
       boot.loader.grub.enable = false;

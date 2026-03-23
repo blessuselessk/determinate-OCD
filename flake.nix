@@ -92,6 +92,7 @@
       flake = false;
       url = "github:nix-community/rnix-parser";
     };
+    sandnix.url = "github:srid/sandnix";
     treefmt-nix = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:numtide/treefmt-nix";

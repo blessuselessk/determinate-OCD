@@ -11,6 +11,7 @@
       ocd.autobots-rebuild
       ocd.determinate
       ocd.networking
+      ocd.nodocs
       ocd.openclaw-gateway
       ocd.remote-access
       ocd.switch-fix
