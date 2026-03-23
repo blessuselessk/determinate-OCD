@@ -37,6 +37,7 @@
       lessuseless.jujutsu
       lessuseless.secrets
       lessuseless.shell
+      lessuseless.ssh
     ];
   };
 }
