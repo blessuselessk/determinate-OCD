@@ -20,9 +20,11 @@
     nixos =
       { config, pkgs, ... }:
       {
-        # EC2 instance — GRUB on the root device
+        # EC2 instance — manage GRUB menu entries only; the bootloader
+        # binary is pre-installed in the AMI's MBR.  "nodev" avoids
+        # grub-install which can break on NVMe device-name changes.
         boot.loader.grub.enable = true;
-        boot.loader.grub.device = "/dev/xvda";
+        boot.loader.grub.device = "nodev";
         fileSystems."/" = {
           device = "/dev/xvda1";
           fsType = "ext4";
