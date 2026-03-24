@@ -18,17 +18,12 @@
       ocd.tailguard
     ];
     nixos =
-      { config, pkgs, ... }:
+      { config, pkgs, modulesPath, ... }:
       {
-        # EC2 instance — manage GRUB menu entries only; the bootloader
-        # binary is pre-installed in the AMI's MBR.  "nodev" avoids
-        # grub-install which can break on NVMe device-name changes.
-        boot.loader.grub.enable = true;
-        boot.loader.grub.device = "nodev";
-        fileSystems."/" = {
-          device = "/dev/xvda1";
-          fsType = "ext4";
-        };
+        # EC2 instance — import the NixOS EC2 module for proper boot,
+        # filesystem, and metadata handling across instance types.
+        imports = [ "${modulesPath}/virtualisation/amazon-image.nix" ];
+        ec2.hvm = true;
         networking.hostName = "fogell";
         networking.dhcpcd.extraConfig = "nohook hostname";
         system.stateVersion = "25.05";
