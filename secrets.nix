@@ -1,6 +1,6 @@
 let
   lessuseless = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAQnPq/vY1gN4IvQf6jBCu6jJWULmIVnKjKoxZxpxakO";
-  fogell = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOkx6l1quddujjkKmDAZ3Bzs1esovbfzKpSut1MAcwFA";
+  fogell = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC7pa4+ayXzkxt7P5NXiLgjXmTASAl2c5c3UTHdQKrCm";
 in
 {
   "modules/lessuseless/secrets/telegram-bot-token.age".publicKeys = [
