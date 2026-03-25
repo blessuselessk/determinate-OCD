@@ -19,7 +19,7 @@
       ocd.tailguard
     ];
     nixos =
-      { config, pkgs, modulesPath, ... }:
+      { config, pkgs, lib, modulesPath, ... }:
       {
         # EC2 instance — import the NixOS EC2 module for proper boot,
         # filesystem, and metadata handling across instance types.
@@ -29,6 +29,7 @@
         users.users.root.openssh.authorizedKeys.keys = [
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAQnPq/vY1gN4IvQf6jBCu6jJWULmIVnKjKoxZxpxakO lessuseless@mclovin"
         ];
+        networking.networkmanager.enable = lib.mkForce false; # Conflicts with EC2 networking
         networking.dhcpcd.extraConfig = "nohook hostname";
         system.stateVersion = "25.05";
 
@@ -105,6 +106,7 @@
   den.aspects.lessuseless = {
     includes = [
       den.provides.primary-user
+      lessuseless.ssh
       lessuseless.secrets
     ];
   };
