@@ -11,6 +11,10 @@
       programs.ssh = {
         enable = true;
         enableDefaultConfig = false;
+        matchBlocks.fogell = {
+          hostname = "fogell.serval-minor.ts.net";
+          user = "root";
+        };
         matchBlocks."*" = {
           addKeysToAgent = "yes";
           identityFile = "~/.ssh/id_ed25519";

@@ -99,6 +99,82 @@
             tokenFile = config.age.secrets.telegram-bot-token.path;
             allowFrom = [ 7917059187 ];
           };
+
+          # MiniMax model providers
+          config.models.providers = {
+            minimax = {
+              baseUrl = "https://api.minimax.io/anthropic";
+              models = [
+                {
+                  id = "MiniMax-M2.7";
+                  name = "MiniMax-M2.7";
+                  contextWindow = 200000;
+                }
+              ];
+            };
+            minimax-portal = {
+              baseUrl = "https://api.minimax.io/anthropic";
+              apiKey = "minimax-oauth";
+              api = "anthropic-messages";
+              models = [
+                {
+                  id = "MiniMax-M2.1";
+                  name = "MiniMax M2.1";
+                  reasoning = false;
+                  input = [ "text" ];
+                  cost = {
+                    input = 0;
+                    output = 0;
+                    cacheRead = 0;
+                    cacheWrite = 0;
+                  };
+                  contextWindow = 200000;
+                  maxTokens = 8192;
+                }
+                {
+                  id = "MiniMax-M2.5";
+                  name = "MiniMax M2.5";
+                  reasoning = true;
+                  input = [ "text" ];
+                  cost = {
+                    input = 0;
+                    output = 0;
+                    cacheRead = 0;
+                    cacheWrite = 0;
+                  };
+                  contextWindow = 200000;
+                  maxTokens = 8192;
+                }
+              ];
+            };
+          };
+
+          # Agent defaults — route to MiniMax
+          config.agents.defaults = {
+            model = {
+              primary = "minimax-portal/MiniMax-M2.5";
+              fallbacks = [
+                "minimax/MiniMax-M2.7"
+                "minimax-portal/MiniMax-M2.1"
+              ];
+            };
+            models = {
+              "minimax/MiniMax-M2.7" = { };
+              "minimax-portal/MiniMax-M2.1" = {
+                alias = "minimax-m2.1";
+              };
+              "minimax-portal/MiniMax-M2.5" = {
+                alias = "minimax-m2.5";
+              };
+            };
+          };
+
+          # MiniMax OAuth plugin
+          config.plugins.entries.minimax-portal-auth.enabled = true;
+          config.auth.profiles."minimax-portal:default" = {
+            provider = "minimax-portal";
+            mode = "oauth";
+          };
         };
       };
   };
