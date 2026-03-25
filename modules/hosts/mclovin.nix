@@ -1,6 +1,7 @@
 {
   den,
   ocd,
+  lair,
   lessuseless,
   ...
 }:
@@ -36,6 +37,7 @@
       lessuseless.gh
       lessuseless.git
       lessuseless.jujutsu
+      lair.jj-guard
       lessuseless.secrets
       lessuseless.shell
       lessuseless.ssh
