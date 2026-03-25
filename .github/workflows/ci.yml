@@ -31,9 +31,10 @@ jobs:
         uses: DeterminateSystems/magic-nix-cache-action@main
       - name: Run flake check
         run: nix flake check --print-build-logs
-  build:
-    name: Build NixOS System
+  build-and-cache:
+    name: Build & Push to Cachix
     needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -42,9 +43,14 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@main
       - name: Enable Magic Nix Cache
         uses: DeterminateSystems/magic-nix-cache-action@main
-      # Build the full system closure without deploying.
-      # Uncomment and set hostname when den.hosts is configured:
-      # - name: Build system
-      #   run: nix build .#nixosConfigurations.<hostname>.config.system.build.toplevel --print-build-logs
-      - name: Build check placeholder
-        run: echo "System build will be enabled once hosts are configured"
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v15
+        with:
+          name: ${{ vars.CACHIX_CACHE_NAME }}
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+      - name: Build Fogel NixOS closure
+        run: nix build .#nixosConfigurations.fogell.config.system.build.toplevel --print-build-logs
+      - name: Push closure to Cachix
+        run: |
+          nix path-info --recursive .#nixosConfigurations.fogell.config.system.build.toplevel \
+            | cachix push ${{ vars.CACHIX_CACHE_NAME }}

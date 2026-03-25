@@ -9,6 +9,7 @@
     includes = [
       ocd.agenix
       ocd.autobots-rebuild
+      ocd.cachix
       ocd.determinate
       ocd.networking
       ocd.nodocs
@@ -77,7 +78,7 @@
           config.gateway.controlUi.dangerouslyDisableDeviceAuth = true; # safe: gateway secured by Tailscale + loopback
           config.gateway.controlUi.allowedOrigins = [
             "https://fogell.serval-minor.ts.net"
-            "https://100.98.82.19"
+            "https://100.82.214.16"
             "https://localhost:18789"
             "https://127.0.0.1:18789"
           ];

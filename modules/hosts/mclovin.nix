@@ -8,6 +8,7 @@
   den.aspects.mclovin = {
     includes = [
       ocd.agenix
+      ocd.cachix
       ocd.determinate
       ocd.homebrew
       ocd.nodocs
