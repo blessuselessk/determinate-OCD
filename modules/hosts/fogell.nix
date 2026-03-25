@@ -195,7 +195,7 @@
               # Dead Man's Switch — Armed
 
               A NixOS upgrade is running. The dead man's switch is armed.
-              Run `cancel-rollback` on this host to confirm, then delete this file.
+              Run `dms-disarm` to confirm the system is healthy and disarm.
               DMSEOF
               chown openclaw:openclaw /var/lib/openclaw/.openclaw/workspace/DMS.md
             '';
@@ -204,11 +204,11 @@
 
         # Health check cron: if DMS is armed and system is healthy, cancel it.
         # The agent is the primary check (sees DMS.md); this cron is the fallback.
-        systemd.services.dms-health = {
+        systemd.services.dms-check = {
           description = "Cancel DMS if system is healthy";
           serviceConfig = {
             Type = "oneshot";
-            ExecStart = pkgs.writeShellScript "dms-health" ''
+            ExecStart = pkgs.writeShellScript "dms-check" ''
               DMS_FILE="/var/lib/openclaw/.openclaw/workspace/DMS.md"
               ROLLBACK="/var/lib/nix-autorollback/profile-switch"
               if [ -e "$ROLLBACK" ] || [ -f "$DMS_FILE" ]; then
@@ -220,7 +220,13 @@
             '';
           };
         };
-        systemd.timers.dms-health = {
+        environment.systemPackages = [
+          (pkgs.writeShellScriptBin "dms-disarm" ''
+            systemctl start dms-check
+          '')
+        ];
+
+        systemd.timers.dms-check = {
           wantedBy = [ "timers.target" ];
           timerConfig = {
             OnCalendar = "*:0/5";
