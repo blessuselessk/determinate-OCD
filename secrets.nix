@@ -15,4 +15,8 @@ in
     lessuseless
     fogell
   ];
+  "modules/lessuseless/secrets/minimax-api-key.age".publicKeys = [
+    lessuseless
+    fogell
+  ];
 }
