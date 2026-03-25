@@ -26,6 +26,9 @@
         imports = [ "${modulesPath}/virtualisation/amazon-image.nix" ];
         ec2.hvm = true;
         networking.hostName = "fogell";
+        users.users.root.openssh.authorizedKeys.keys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAQnPq/vY1gN4IvQf6jBCu6jJWULmIVnKjKoxZxpxakO lessuseless@mclovin"
+        ];
         networking.dhcpcd.extraConfig = "nohook hostname";
         system.stateVersion = "25.05";
 
@@ -44,6 +47,11 @@
           file = ../lessuseless/secrets/wg-warp-key.age;
           mode = "0600";
         };
+        age.secrets.minimax-api-key = {
+          file = ../lessuseless/secrets/minimax-api-key.age;
+          owner = "openclaw";
+          mode = "0400";
+        };
 
         # Tailguard: WARP exit node IPs from wgcf-profile.conf
         networking.wireguard.interfaces.wg-warp.ips = [
@@ -61,7 +69,10 @@
             Type = "oneshot";
             RemainAfterExit = true;
             ExecStart = pkgs.writeShellScript "openclaw-gateway-env" ''
-              printf 'OPENCLAW_GATEWAY_TOKEN=%s\n' "$(cat ${config.age.secrets.openclaw-gateway-token.path})" > /run/openclaw-gateway.env
+              printf 'OPENCLAW_GATEWAY_TOKEN=%s\nMINIMAX_API_KEY=%s\n' \
+                "$(cat ${config.age.secrets.openclaw-gateway-token.path})" \
+                "$(cat ${config.age.secrets.minimax-api-key.path})" \
+                > /run/openclaw-gateway.env
               chmod 400 /run/openclaw-gateway.env
               chown openclaw:openclaw /run/openclaw-gateway.env
             '';
