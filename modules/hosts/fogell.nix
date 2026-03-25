@@ -176,6 +176,57 @@
             mode = "oauth";
           };
         };
+
+        # Dead man's switch: arm before auto-upgrade, auto-cancel via health check.
+        # Flow: arm DMS + write DMS.md → upgrade runs → agent or cron cancels.
+        systemd.services.dms-arm = {
+          description = "Arm dead man's switch before upgrade";
+          before = [ "nixos-upgrade.service" ];
+          requiredBy = [ "nixos-upgrade.service" ];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = pkgs.writeShellScript "dms-arm" ''
+              # Arm the DMS (save current system for rollback)
+              ln -sf $(readlink /run/current-system) /var/lib/nix-autorollback/profile-switch
+
+              # Inject into OpenClaw agent context
+              cat > /var/lib/openclaw/.openclaw/workspace/DMS.md << 'DMSEOF'
+              # Dead Man's Switch — Armed
+
+              A NixOS upgrade is running. The dead man's switch is armed.
+              Run `cancel-rollback` on this host to confirm, then delete this file.
+              DMSEOF
+              chown openclaw:openclaw /var/lib/openclaw/.openclaw/workspace/DMS.md
+            '';
+          };
+        };
+
+        # Health check cron: if DMS is armed and system is healthy, cancel it.
+        # The agent is the primary check (sees DMS.md); this cron is the fallback.
+        systemd.services.dms-health = {
+          description = "Cancel DMS if system is healthy";
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = pkgs.writeShellScript "dms-health" ''
+              DMS_FILE="/var/lib/openclaw/.openclaw/workspace/DMS.md"
+              ROLLBACK="/var/lib/nix-autorollback/profile-switch"
+              if [ -e "$ROLLBACK" ] || [ -f "$DMS_FILE" ]; then
+                systemctl stop nix-autorollback.service 2>/dev/null || true
+                rm -f /var/lib/nix-autorollback/profile-switch
+                rm -f /var/lib/nix-autorollback/profile
+                rm -f "$DMS_FILE"
+              fi
+            '';
+          };
+        };
+        systemd.timers.dms-health = {
+          wantedBy = [ "timers.target" ];
+          timerConfig = {
+            OnCalendar = "*:0/5";
+            Persistent = true;
+          };
+        };
       };
   };
 
