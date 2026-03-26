@@ -166,6 +166,23 @@
       };
     in
     {
+      # ~/Projects/ directory structure
+      home.file."Projects/Prototypes/CLAUDE.md".text = ''
+        # Prototypes
+
+        Personal projects without a formalized publishing pipeline. Exploratory work, proof-of-concepts, things that might become something or might not. No release process — just building and learning.
+      '';
+      home.file."Projects/Testing/CLAUDE.md".text = ''
+        # Testing
+
+        Cloned repos for experimentation. Code here is someone else's — you're poking at it, learning how it works, maybe breaking it on purpose. Nothing here gets published or pushed upstream.
+      '';
+      home.file."Projects/Maintaining/CLAUDE.md".text = ''
+        # Maintaining
+
+        Projects with a release pipeline. Either matured out of Prototypes or forks of upstream projects worth customizing. These have real users or real dependencies — treat changes with care.
+      '';
+
       # ~/.local/bin/git — jj-guard (shadows real git via PATH priority)
       home.file.".local/bin/git".source = "${jj-guard}/bin/git";
       home.sessionPath = [ "$HOME/.local/bin" ];
