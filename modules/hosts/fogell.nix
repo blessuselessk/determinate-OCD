@@ -89,7 +89,7 @@
           };
         };
 
-        # Provision workspace: system/ is immutable (overwritten each rebuild),
+        # Provision workspace: _system/ is immutable (overwritten each rebuild),
         # templates are seeded once (agent evolves them), agent state is never touched.
         systemd.services.openclaw-workspace-init = {
           description = "Provision OpenClaw workspace documents";
@@ -105,16 +105,16 @@
               install -d -o openclaw -g openclaw "$WS/_system"
               install -m 0444 -o openclaw -g openclaw \
                 ${../community/ocd/_helpers/workspace/_system/AGENTS.md} \
-                "$WS/system/AGENTS.md"
+                "$WS/_system/AGENTS.md"
               install -m 0444 -o openclaw -g openclaw \
                 ${../community/ocd/_helpers/workspace/_system/SOUL.md} \
-                "$WS/system/SOUL.md"
+                "$WS/_system/SOUL.md"
               install -m 0444 -o openclaw -g openclaw \
                 ${../community/ocd/_helpers/workspace/_system/USER.md} \
-                "$WS/system/USER.md"
+                "$WS/_system/USER.md"
               install -m 0444 -o openclaw -g openclaw \
                 ${../community/ocd/_helpers/workspace/_system/TOOLS.md} \
-                "$WS/system/TOOLS.md"
+                "$WS/_system/TOOLS.md"
 
               # Templates — seed once, agent evolves
               test -f "$WS/HEARTBEAT.md" || \
