@@ -81,6 +81,10 @@
                 > /run/openclaw-gateway.env
               chmod 400 /run/openclaw-gateway.env
               chown openclaw:openclaw /run/openclaw-gateway.env
+
+              # Inject discord bot token into gateway config (upstream schema has no tokenFile for discord)
+              DISCORD_TOKEN="$(cat ${config.age.secrets.discord-bot-token.path})"
+              ${pkgs.gnused}/bin/sed -i "s|__DISCORD_BOT_TOKEN__|$DISCORD_TOKEN|" /etc/openclaw/openclaw.json
             '';
           };
         };
@@ -143,7 +147,7 @@
           config.channels.discord = {
             accounts.default = {
               enabled = true;
-              tokenFile = config.age.secrets.discord-bot-token.path;
+              token = "__DISCORD_BOT_TOKEN__"; # placeholder — replaced at activation by openclaw-gateway-env
             };
             groupPolicy = "allowlist";
             guilds."1486572020824281180" = {
