@@ -145,6 +145,11 @@
               enabled = true;
               tokenFile = config.age.secrets.discord-bot-token.path;
             };
+            groupPolicy = "allowlist";
+            guilds."1486572020824281180" = {
+              requireMention = true;
+              users = [ "1483775972938354778" ];
+            };
             dm = {
               enabled = true;
               allowFrom = [ "1483775972938354778" ];
