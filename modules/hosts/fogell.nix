@@ -53,6 +53,11 @@
           owner = "openclaw";
           mode = "0400";
         };
+        age.secrets.discord-bot-token = {
+          file = ../lessuseless/secrets/discord-bot-token.age;
+          owner = "openclaw";
+          mode = "0400";
+        };
 
         # Tailguard: WARP exit node IPs from wgcf-profile.conf
         networking.wireguard.interfaces.wg-warp.ips = [
@@ -80,6 +85,42 @@
           };
         };
 
+        # Provision workspace: system/ is immutable (overwritten each rebuild),
+        # templates are seeded once (agent evolves them), agent state is never touched.
+        systemd.services.openclaw-workspace-init = {
+          description = "Provision OpenClaw workspace documents";
+          before = [ "openclaw-gateway.service" ];
+          requiredBy = [ "openclaw-gateway.service" ];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = pkgs.writeShellScript "openclaw-workspace-init" ''
+              WS=/var/lib/openclaw/.openclaw/workspace
+
+              # Firmware — always overwrite (read-only, nix-managed)
+              install -d -o openclaw -g openclaw "$WS/_system"
+              install -m 0444 -o openclaw -g openclaw \
+                ${../community/ocd/_helpers/workspace/_system/AGENTS.md} \
+                "$WS/system/AGENTS.md"
+              install -m 0444 -o openclaw -g openclaw \
+                ${../community/ocd/_helpers/workspace/_system/SOUL.md} \
+                "$WS/system/SOUL.md"
+              install -m 0444 -o openclaw -g openclaw \
+                ${../community/ocd/_helpers/workspace/_system/USER.md} \
+                "$WS/system/USER.md"
+              install -m 0444 -o openclaw -g openclaw \
+                ${../community/ocd/_helpers/workspace/_system/TOOLS.md} \
+                "$WS/system/TOOLS.md"
+
+              # Templates — seed once, agent evolves
+              test -f "$WS/HEARTBEAT.md" || \
+                install -m 0644 -o openclaw -g openclaw \
+                  ${../community/ocd/_helpers/workspace/HEARTBEAT.md} \
+                  "$WS/HEARTBEAT.md"
+            '';
+          };
+        };
+
         # Gateway service config
         services.openclaw-gateway = {
           environmentFiles = [ "/run/openclaw-gateway.env" ];
@@ -98,6 +139,16 @@
             enabled = true;
             tokenFile = config.age.secrets.telegram-bot-token.path;
             allowFrom = [ 7917059187 ];
+          };
+          config.channels.discord = {
+            accounts.default = {
+              enabled = true;
+              tokenFile = config.age.secrets.discord-bot-token.path;
+            };
+            dm = {
+              enabled = true;
+              allowFrom = [ "1483775972938354778" ];
+            };
           };
 
           # MiniMax model providers

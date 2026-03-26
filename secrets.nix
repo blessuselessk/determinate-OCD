@@ -19,4 +19,8 @@ in
     lessuseless
     fogell
   ];
+  "modules/lessuseless/secrets/discord-bot-token.age".publicKeys = [
+    lessuseless
+    fogell
+  ];
 }
