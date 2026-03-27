@@ -24,3 +24,4 @@ repomix-*.xml
 
 # Backup files
 *.bak
+.openclaw-research/

@@ -81,10 +81,6 @@
                 > /run/openclaw-gateway.env
               chmod 400 /run/openclaw-gateway.env
               chown openclaw:openclaw /run/openclaw-gateway.env
-
-              # Inject discord bot token into gateway config (upstream schema has no tokenFile for discord)
-              DISCORD_TOKEN="$(cat ${config.age.secrets.discord-bot-token.path})"
-              ${pkgs.gnused}/bin/sed -i "s|__DISCORD_BOT_TOKEN__|$DISCORD_TOKEN|" /etc/openclaw/openclaw.json
             '';
           };
         };
@@ -144,10 +140,27 @@
             tokenFile = config.age.secrets.telegram-bot-token.path;
             allowFrom = [ 7917059187 ];
           };
+          # Secret injection for channels that lack tokenFile support.
+          #
+          # OpenClaw's gateway supports `tokenFile` for Telegram (the app reads the file
+          # at startup), but not for Discord or other channels. Putting plaintext tokens
+          # in Nix config leaks them to the world-readable nix store.
+          #
+          # Workaround: use a placeholder in the Nix-generated config JSON, then replace
+          # it with the real secret via a root-privileged ExecStartPre script that runs
+          # before every gateway start. This is the standard agenix pattern for services
+          # that don't support secret file references.
+          #
+          # Upstream: https://github.com/openclaw/openclaw/issues/56397
+          # (tokenFile should be supported for all channel account types, not just Telegram)
+          #
+          # When upstream adds tokenFile for Discord, replace this block with:
+          #   accounts.default = { enabled = true; tokenFile = config.age.secrets.discord-bot-token.path; };
+          # and remove the ExecStartPre inject-secrets script below.
           config.channels.discord = {
             accounts.default = {
               enabled = true;
-              token = "__DISCORD_BOT_TOKEN__"; # placeholder — replaced at activation by openclaw-gateway-env
+              token = "__DISCORD_BOT_TOKEN__";
             };
             groupPolicy = "allowlist";
             guilds."1486572020824281180" = {
@@ -235,6 +248,19 @@
             provider = "minimax-portal";
             mode = "oauth";
           };
+
+          # Inject secrets into config JSON before each gateway start.
+          # Runs as root ('+' prefix) to read agenix secrets and write /etc/openclaw.
+          # See discord config comment above for rationale.
+          execStartPre = [
+            "+${
+              pkgs.writeShellScript "openclaw-inject-secrets" ''
+                ${pkgs.gnused}/bin/sed -i \
+                  "s|__DISCORD_BOT_TOKEN__|$(cat ${config.age.secrets.discord-bot-token.path})|" \
+                  /etc/openclaw/openclaw.json
+              ''
+            }"
+          ];
         };
 
         # Dead man's switch: arm before auto-upgrade, auto-cancel via health check.
