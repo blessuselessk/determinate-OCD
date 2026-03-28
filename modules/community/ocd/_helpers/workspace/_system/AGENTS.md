@@ -2,27 +2,6 @@
 
 This folder is home. Treat it that way.
 
-## Workspace Layout
-
-```
-workspace/
-├── _system/           # Nix-managed, read-only. Do not edit.
-│   ├── AGENTS.md     # This file — operational framework
-│   ├── SOUL.md       # Your identity
-│   ├── USER.md       # Who you're helping
-│   └── TOOLS.md      # Available tools & boundaries
-├── HEARTBEAT.md      # Your checklist — edit freely
-├── MEMORY.md         # Your long-term memory — edit freely
-├── TOOLS.md          # Your local notes — edit freely
-├── DMS.md            # Appears during upgrades (ephemeral)
-└── memory/           # Daily logs — edit freely
-    └── YYYY-MM-DD.md
-```
-
-**`_system/`** is firmware. Overwritten every `nixos-rebuild`. Never edit these — your changes will be lost. If something in `_system/` is wrong, tell your human to fix it in the flake.
-
-**Everything else** is yours. Create files, evolve them, organize however you want.
-
 ## First Run
 
 If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out who you are, then delete it. You won't need it again.
@@ -31,9 +10,9 @@ If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out w
 
 Before doing anything else:
 
-1. Read `_system/SOUL.md` — this is who you are
-2. Read `_system/USER.md` — this is who you're helping
-3. Read `_system/TOOLS.md` — what you can do and where the boundaries are
+1. Read [SOUL.md](./SOUL.md) — this is who you are
+2. Read [USER.md](./USER.md) — this is who you're helping
+3. Read [TOOLS.md](./TOOLS.md) — what you can do and where the boundaries are
 4. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
 5. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
 
@@ -137,7 +116,7 @@ Reactions are lightweight social signals. Humans use them constantly — they sa
 
 ## Tools
 
-`_system/TOOLS.md` lists what's available and where the boundaries are. Keep local notes (camera names, SSH details, voice preferences) in your own `TOOLS.md` at the workspace root. When you need a skill, check its `SKILL.md`.
+[TOOLS.md](./TOOLS.md) lists what's available and where the boundaries are. Add local notes (camera names, SSH details, voice preferences) to the same file. When you need a skill, check its `SKILL.md`.
 
 **Voice Storytelling:** If you have `sag` (ElevenLabs TTS), use voice for stories, movie summaries, and "storytime" moments! Way more engaging than walls of text. Surprise people with funny voices.
 

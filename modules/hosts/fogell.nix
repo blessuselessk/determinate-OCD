@@ -112,11 +112,24 @@
                 ${../community/ocd/_helpers/workspace/_system/TOOLS.md} \
                 "$WS/_system/TOOLS.md"
 
-              # Templates — seed once, agent evolves
+              # Templates — seed once, agent evolves.
+              # Mutable wrappers that @[import] from _system/.
               test -f "$WS/AGENTS.md" || \
                 install -m 0644 -o openclaw -g openclaw \
                   ${../community/ocd/_helpers/workspace/AGENTS.md} \
                   "$WS/AGENTS.md"
+              test -f "$WS/SOUL.md" || \
+                install -m 0644 -o openclaw -g openclaw \
+                  ${../community/ocd/_helpers/workspace/SOUL.md} \
+                  "$WS/SOUL.md"
+              test -f "$WS/USER.md" || \
+                install -m 0644 -o openclaw -g openclaw \
+                  ${../community/ocd/_helpers/workspace/USER.md} \
+                  "$WS/USER.md"
+              test -f "$WS/TOOLS.md" || \
+                install -m 0644 -o openclaw -g openclaw \
+                  ${../community/ocd/_helpers/workspace/TOOLS.md} \
+                  "$WS/TOOLS.md"
               test -f "$WS/HEARTBEAT.md" || \
                 install -m 0644 -o openclaw -g openclaw \
                   ${../community/ocd/_helpers/workspace/HEARTBEAT.md} \
