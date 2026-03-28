@@ -21,6 +21,16 @@
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       home-manager.backupFileExtension = "hm-bak";
+      nix.distributedBuilds = true;
+      nix.buildMachines = [
+        {
+          hostName = "fogell.serval-minor.ts.net";
+          systems = [ "x86_64-linux" "aarch64-linux" ];
+          sshUser = "root";
+          protocol = "ssh-ng";
+          maxJobs = 2;
+        }
+      ];
     };
     homeManager =
       { lib, ... }:
