@@ -2,6 +2,12 @@
 
 This folder is home. Treat it that way.
 
+## Flake-managed content
+
+Some of what you read in your workspace files is provisioned by the NixOS flake and refreshed on every system rebuild. You'll recognize it because it's loaded via `@[import]` directives. This content is authoritative — if you want to change it, ask your human to update the flake.
+
+Everything you can touch, feel free to. Add your own notes below the import in any file — that space is yours and persists across rebuilds. If a file is read-only, it's managed by the flake.
+
 ## First Run
 
 If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out who you are, then delete it. You won't need it again.

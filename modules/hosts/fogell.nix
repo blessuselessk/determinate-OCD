@@ -98,7 +98,7 @@
               WS=/var/lib/openclaw/.openclaw/workspace
 
               # Firmware — always overwrite (read-only, nix-managed)
-              install -d -o openclaw -g openclaw "$WS/_system"
+              install -d -m 0555 -o openclaw -g openclaw "$WS/_system"
               install -m 0444 -o openclaw -g openclaw \
                 ${../community/ocd/_helpers/workspace/_system/AGENTS.md} \
                 "$WS/_system/AGENTS.md"
