@@ -113,6 +113,10 @@
                 "$WS/_system/TOOLS.md"
 
               # Templates — seed once, agent evolves
+              test -f "$WS/AGENTS.md" || \
+                install -m 0644 -o openclaw -g openclaw \
+                  ${../community/ocd/_helpers/workspace/AGENTS.md} \
+                  "$WS/AGENTS.md"
               test -f "$WS/HEARTBEAT.md" || \
                 install -m 0644 -o openclaw -g openclaw \
                   ${../community/ocd/_helpers/workspace/HEARTBEAT.md} \
