@@ -23,4 +23,8 @@ in
     lessuseless
     fogell
   ];
+  "modules/lessuseless/secrets/github-pat-openclaw.age".publicKeys = [
+    lessuseless
+    fogell
+  ];
 }

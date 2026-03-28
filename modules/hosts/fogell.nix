@@ -58,6 +58,11 @@
           owner = "openclaw";
           mode = "0400";
         };
+        age.secrets.github-pat-openclaw = {
+          file = ../lessuseless/secrets/github-pat-openclaw.age;
+          owner = "openclaw";
+          mode = "0400";
+        };
 
         # Tailguard: WARP exit node IPs from wgcf-profile.conf
         networking.wireguard.interfaces.wg-warp.ips = [
@@ -75,9 +80,10 @@
             Type = "oneshot";
             RemainAfterExit = true;
             ExecStart = pkgs.writeShellScript "openclaw-gateway-env" ''
-              printf 'OPENCLAW_GATEWAY_TOKEN=%s\nMINIMAX_API_KEY=%s\n' \
+              printf 'OPENCLAW_GATEWAY_TOKEN=%s\nMINIMAX_API_KEY=%s\nGITHUB_TOKEN=%s\n' \
                 "$(cat ${config.age.secrets.openclaw-gateway-token.path})" \
                 "$(cat ${config.age.secrets.minimax-api-key.path})" \
+                "$(cat ${config.age.secrets.github-pat-openclaw.path})" \
                 > /run/openclaw-gateway.env
               chmod 400 /run/openclaw-gateway.env
               chown openclaw:openclaw /run/openclaw-gateway.env
