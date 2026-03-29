@@ -172,7 +172,8 @@
           config.gateway.bind = "loopback";
           config.gateway.trustedProxies = [ "127.0.0.1" ]; # Tailscale Serve is a local reverse proxy
           config.gateway.tailscale.mode = "serve"; # HTTPS via tailscale serve — handles TLS + device identity
-          config.gateway.controlUi.dangerouslyDisableDeviceAuth = true; # safe: gateway secured by Tailscale + loopback
+          config.gateway.dangerouslyDisableDeviceAuth = true; # safe: gateway secured by Tailscale + loopback + token auth
+          config.gateway.controlUi.dangerouslyDisableDeviceAuth = true;
           config.gateway.controlUi.allowedOrigins = [
             "https://fogell.serval-minor.ts.net"
             "https://100.82.214.16"
