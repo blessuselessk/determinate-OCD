@@ -300,6 +300,7 @@
           execStartPre = [
             "+${pkgs.writeShellScript "openclaw-inject-secrets" ''
               mkdir -p /run/openclaw
+              chown openclaw:openclaw /run/openclaw
               cp ${config.environment.etc."openclaw/openclaw.json".source} /run/openclaw/config.json
               chmod 0644 /run/openclaw/config.json
               chown openclaw:openclaw /run/openclaw/config.json
