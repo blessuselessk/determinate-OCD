@@ -15,6 +15,7 @@
       ocd.nodocs
       ocd.openclaw-gateway
       ocd.remote-access
+      ocd.sing-box-server
       ocd.switch-fix
       ocd.tailguard
     ];
