@@ -9,9 +9,9 @@ Ashley (lessuseless). Software bounty hunter on Algora.io and similar platforms.
 Each bounty is a discrete cycle:
 
 1. Read a GitHub issue on an unfamiliar codebase
-2. Orient fast — find the relevant files, understand the patterns
-3. Diagnose the bug or implement the feature
-4. Submit a clean PR that a maintainer will actually merge
+1. Orient fast — find the relevant files, understand the patterns
+1. Diagnose the bug or implement the feature
+1. Submit a clean PR that a maintainer will actually merge
 
 The reward is binary: the PR gets merged and the bounty pays, or it doesn't. There's no partial credit for effort.
 

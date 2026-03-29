@@ -19,6 +19,7 @@ This flake uses **GP2**: gateway on fogell (Linux), node on mclovin (macOS), con
 For GP2, you must check **both** sides before forming a theory:
 
 **On the Mac (node):**
+
 ```bash
 openclaw status --all
 openclaw doctor
@@ -26,6 +27,7 @@ openclaw security audit --deep
 ```
 
 **On the gateway host (fogell):**
+
 ```bash
 ssh root@fogell.serval-minor.ts.net
 openclaw status --all
@@ -43,6 +45,7 @@ Follow every suggested next action the CLI outputs. Chain them until you run out
 Only after collecting complete output from all hosts should you look at the Nix configuration. The CLI's diagnostic output is ground truth — not inferences from reading `.nix` files.
 
 Key questions to answer:
+
 - What mode is each side in? (local / remote)
 - What transport is in use? (direct / SSH tunnel / Tailscale Serve)
 - What auth layer is failing? (token / device signature / TLS / connectivity)
@@ -53,8 +56,8 @@ Key questions to answer:
 If the diagnostics or docs leave anything unclear — URL schemes (`wss://` vs `https://`), auth modes, transport options, config field semantics:
 
 1. Read the upstream nix-openclaw docs (`docs/golden-paths.md`, README, generated config schema)
-2. Ask the user targeted questions
-3. Think more
+1. Ask the user targeted questions
+1. Think more
 
 Do not guess and ship. Do not infer config field semantics from names alone — verify from the schema or docs.
 
@@ -71,6 +74,7 @@ Secrets flow through four stages. Understanding this sequence prevents common mi
 ### 1. Recipients — `secrets.nix` (repo root)
 
 `secrets.nix` maps each `.age` file to a list of **recipient public keys** — the SSH keys authorized to decrypt it. Recipients are typically:
+
 - **User keys** — so the developer can edit/rekey secrets with `ragenix`
 - **Host keys** — so the target machine can decrypt at activation time
 
@@ -113,6 +117,7 @@ ExecStart = "... $(cat ${config.age.secrets.openclaw-gateway-token.path}) ...";
 ### 4. Activation & runtime — host decrypts
 
 On system activation (`nixos-rebuild switch` / `darwin-rebuild switch`):
+
 - **NixOS**: agenix systemd service decrypts `.age` files using the host's SSH key → plaintext appears at `/run/agenix/<name>`
 - **macOS**: agenix darwin module does the same, but the host key must be a recipient in `secrets.nix`
 
@@ -150,8 +155,8 @@ Services then read from the runtime path. The plaintext only exists in memory/tm
 This configuration is mid-refactor:
 
 1. **Upstream build is broken** — `nix-openclaw` (`github:arubis/nix-openclaw`) won't build due to a missing dependency. We're using a pinned branch (`fix/rolldown-sandbox-shim`) as a workaround.
-2. **Dendritic community layer** — These aspects follow dendrix conventions (`ocd.<name>.<class>`). The goal is a reusable community layer, not a fork.
-3. **Future upstream target** — Once the local configuration is working end-to-end, evaluate whether `gh:openclaw/openclaw` can be used directly as the flake input instead of `nix-openclaw`. Only keep `nix-openclaw` if it provides NixOS/HM module wiring or packaging that the main repo does not.
+1. **Dendritic community layer** — These aspects follow dendrix conventions (`ocd.<name>.<class>`). The goal is a reusable community layer, not a fork.
+1. **Future upstream target** — Once the local configuration is working end-to-end, evaluate whether `gh:openclaw/openclaw` can be used directly as the flake input instead of `nix-openclaw`. Only keep `nix-openclaw` if it provides NixOS/HM module wiring or packaging that the main repo does not.
 
 ## Aspects in this directory
 
@@ -173,6 +178,6 @@ This configuration is mid-refactor:
 | HM clobber conflict on `openclaw.json` | nix-openclaw HM module creates symlinks via `openclawConfigFiles` activation, but HM's `checkLinkTargets` doesn't recognize them as HM-managed | Remove the symlink before rebuild; needs permanent upstream fix or `force = true` |
 | `https://` URL rejected as insecure | OpenClaw converts `https://` to `ws://` (not `wss://`) for WebSocket; `ws://` rejected for non-loopback | Always use `wss://` scheme for remote gateway URLs |
 
----
+______________________________________________________________________
 
 **Maintenance note:** Update this file each time an OpenClaw configuration issue is successfully resolved. Add new entries to "Known issues & workarounds" and refine the troubleshooting workflow. The goal is fewer debugging loops and more targeted fixes over time.

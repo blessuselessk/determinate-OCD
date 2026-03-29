@@ -1,7 +1,6 @@
----
-name: nix-best-practices
-description: Nix patterns for flakes, overlays, unfree handling, and binary overlays. Use when working with flake.nix or shell.nix.
----
+______________________________________________________________________
+
+## name: nix-best-practices description: Nix patterns for flakes, overlays, unfree handling, and binary overlays. Use when working with flake.nix or shell.nix.
 
 # Nix Best Practices
 
@@ -212,6 +211,7 @@ nix hash to-sri --type sha256 <base32-hash>
 ```
 
 Or use SRI directly:
+
 ```bash
 nix-prefetch-url --type sha256 https://example.com/tool-linux-amd64-v1.0.0
 ```
@@ -315,6 +315,7 @@ nix run .#packageName
 ### "unexpected argument" Error
 
 All inputs must be listed in outputs function:
+
 ```nix
 # Wrong
 outputs = { self, nixpkgs }: ...
@@ -326,9 +327,10 @@ outputs = { self, nixpkgs, other-input, ... }: ...
 ### Unfree Package Errors with nix develop
 
 `config.allowUnfree` in flake.nix doesn't propagate to `nix develop`. Use:
+
 1. nixpkgs-unfree input (recommended)
-2. User's `~/.config/nixpkgs/config.nix`
-3. `NIXPKGS_ALLOW_UNFREE=1 nix develop --impure`
+1. User's `~/.config/nixpkgs/config.nix`
+1. `NIXPKGS_ALLOW_UNFREE=1 nix develop --impure`
 
 ### Duplicate Nixpkgs Downloads
 
@@ -337,6 +339,7 @@ Use `follows` to chain inputs to a single nixpkgs source.
 ### Overlay Not Applied
 
 Ensure overlay is in the `overlays` list when importing nixpkgs:
+
 ```nix
 pkgs = import nixpkgs {
   inherit system;

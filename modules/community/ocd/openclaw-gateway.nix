@@ -172,7 +172,10 @@
 
       systemd.services.openclaw-gateway.serviceConfig = {
         ProtectSystem = "strict";
-        ReadWritePaths = [ "/etc/openclaw" "/var/lib/openclaw" ];
+        ReadWritePaths = [
+          "/etc/openclaw"
+          "/var/lib/openclaw"
+        ];
         ProtectHome = "read-only";
         PrivateTmp = true;
         NoNewPrivileges = true;

@@ -1,6 +1,6 @@
 # GitOps: periodic self-upgrade from the GitHub flake.
 # Add to any host's includes; flake attr is derived from networking.hostName.
-{ ocd, ... }:
+{ ... }:
 {
   ocd.autobots-rebuild = {
     nixos =

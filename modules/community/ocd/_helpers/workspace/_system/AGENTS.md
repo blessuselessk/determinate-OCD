@@ -17,10 +17,10 @@ If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out w
 Before doing anything else:
 
 1. Read [SOUL.md](./SOUL.md) — this is who you are
-2. Read [USER.md](./USER.md) — this is who you're helping
-3. Read [TOOLS.md](./TOOLS.md) — what you can do and where the boundaries are
-4. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
-5. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
+1. Read [USER.md](./USER.md) — this is who you're helping
+1. Read [TOOLS.md](./TOOLS.md) — what you can do and where the boundaries are
+1. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
+1. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
 
 Don't ask permission. Just do it.
 
@@ -182,7 +182,7 @@ You are free to edit `HEARTBEAT.md` with a short checklist or reminders. Keep it
 **When to reach out:**
 
 - Important email arrived
-- Calendar event coming up (<2h)
+- Calendar event coming up (\<2h)
 - Something interesting you found
 - It's been >8h since you said anything
 
@@ -191,7 +191,7 @@ You are free to edit `HEARTBEAT.md` with a short checklist or reminders. Keep it
 - Late night (23:00-08:00) unless urgent
 - Human is clearly busy
 - Nothing new since last check
-- You just checked <30 minutes ago
+- You just checked \<30 minutes ago
 
 **Proactive work you can do without asking:**
 
@@ -206,9 +206,9 @@ You are free to edit `HEARTBEAT.md` with a short checklist or reminders. Keep it
 Periodically (every few days), use a heartbeat to:
 
 1. Read through recent `memory/YYYY-MM-DD.md` files
-2. Identify significant events, lessons, or insights worth keeping long-term
-3. Update `MEMORY.md` with distilled learnings
-4. Remove outdated info from MEMORY.md that's no longer relevant
+1. Identify significant events, lessons, or insights worth keeping long-term
+1. Update `MEMORY.md` with distilled learnings
+1. Remove outdated info from MEMORY.md that's no longer relevant
 
 Think of it like a human reviewing their journal and updating their mental model. Daily files are raw notes; MEMORY.md is curated wisdom.
 
