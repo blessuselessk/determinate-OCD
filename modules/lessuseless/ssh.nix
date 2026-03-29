@@ -23,6 +23,17 @@
           };
         };
       };
+
+      launchd.agents.ssh-add = {
+        enable = true;
+        config = {
+          ProgramArguments = [
+            "/usr/bin/ssh-add"
+            "--apple-use-keychain"
+          ];
+          RunAtLoad = true;
+        };
+      };
     };
   };
 }
