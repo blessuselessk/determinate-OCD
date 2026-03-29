@@ -25,8 +25,9 @@
           exit 1
         fi
 
-        # Bypass for jj internal calls (jj git push) and explicit opt-out
-        if [ "''${JJ_GUARD_SKIP:-}" = "1" ]; then
+        # Bypass when jj is our parent (jj git push/fetch internally calls git)
+        _parent=$(ps -o comm= -p "$PPID" 2>/dev/null || true)
+        if [ "$_parent" = "jj" ]; then
           exec "$REAL_GIT" "$@"
         fi
 

@@ -19,7 +19,13 @@
       ocd.tailguard
     ];
     nixos =
-      { config, pkgs, lib, modulesPath, ... }:
+      {
+        config,
+        pkgs,
+        lib,
+        modulesPath,
+        ...
+      }:
       {
         # EC2 instance — import the NixOS EC2 module for proper boot,
         # filesystem, and metadata handling across instance types.
@@ -276,13 +282,11 @@
           # Runs as root ('+' prefix) to read agenix secrets and write /etc/openclaw.
           # See discord config comment above for rationale.
           execStartPre = [
-            "+${
-              pkgs.writeShellScript "openclaw-inject-secrets" ''
-                ${pkgs.gnused}/bin/sed -i \
-                  "s|__DISCORD_BOT_TOKEN__|$(cat ${config.age.secrets.discord-bot-token.path})|" \
-                  /etc/openclaw/openclaw.json
-              ''
-            }"
+            "+${pkgs.writeShellScript "openclaw-inject-secrets" ''
+              ${pkgs.gnused}/bin/sed -i \
+                "s|__DISCORD_BOT_TOKEN__|$(cat ${config.age.secrets.discord-bot-token.path})|" \
+                /etc/openclaw/openclaw.json
+            ''}"
           ];
         };
 
