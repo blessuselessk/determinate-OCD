@@ -156,6 +156,15 @@
           config.environment.etc."openclaw/openclaw.json".source
         ];
 
+        # Redirect config path to /run (outside environment.etc management).
+        # The gateway detects "Nix mode" when /etc/static/openclaw/openclaw.json
+        # exists as a Nix store symlink, then re-reads the template on every start,
+        # clobbering injected secrets. Using /run/ avoids this detection.
+        systemd.services.openclaw-gateway.environment = {
+          OPENCLAW_CONFIG_PATH = lib.mkForce "/run/openclaw/config.json";
+          CLAWDBOT_CONFIG_PATH = lib.mkForce "/run/openclaw/config.json";
+        };
+
         # Gateway service config
         services.openclaw-gateway = {
           environmentFiles = [ "/run/openclaw-gateway.env" ];
@@ -284,21 +293,19 @@
             mode = "oauth";
           };
 
-          # Inject secrets into config JSON before each gateway start.
-          # Runs as root ('+' prefix) to read agenix secrets and write /etc/openclaw.
-          # See discord config comment above for rationale.
-          #
-          # Always re-copy from the Nix-generated template first. NixOS activation
-          # (triggered by nixos-upgrade) overwrites /etc/openclaw/openclaw.json with
-          # the placeholder via environment.etc, clobbering the injected token.
-          # Copying from the store path makes this idempotent regardless of disk state.
+          # Inject secrets into a runtime config at /run/openclaw/config.json.
+          # The gateway env vars are redirected there (see above) to avoid Nix mode:
+          # when the config lives under /etc with a /etc/static/ symlink, the gateway
+          # re-reads the Nix store template on every start, clobbering injected secrets.
           execStartPre = [
             "+${pkgs.writeShellScript "openclaw-inject-secrets" ''
-              cp ${config.environment.etc."openclaw/openclaw.json".source} /etc/openclaw/openclaw.json
-              chmod 0644 /etc/openclaw/openclaw.json
+              mkdir -p /run/openclaw
+              cp ${config.environment.etc."openclaw/openclaw.json".source} /run/openclaw/config.json
+              chmod 0644 /run/openclaw/config.json
+              chown openclaw:openclaw /run/openclaw/config.json
               ${pkgs.gnused}/bin/sed -i \
                 "s|__DISCORD_BOT_TOKEN__|$(cat ${config.age.secrets.discord-bot-token.path})|" \
-                /etc/openclaw/openclaw.json
+                /run/openclaw/config.json
             ''}"
           ];
         };
