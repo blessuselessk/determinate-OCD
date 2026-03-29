@@ -150,6 +150,12 @@
           };
         };
 
+        # Restart gateway after any activation that changes the config,
+        # so ExecStartPre re-injects secrets into the fresh template.
+        systemd.services.openclaw-gateway.restartTriggers = [
+          config.environment.etc."openclaw/openclaw.json".source
+        ];
+
         # Gateway service config
         services.openclaw-gateway = {
           environmentFiles = [ "/run/openclaw-gateway.env" ];
@@ -281,8 +287,15 @@
           # Inject secrets into config JSON before each gateway start.
           # Runs as root ('+' prefix) to read agenix secrets and write /etc/openclaw.
           # See discord config comment above for rationale.
+          #
+          # Always re-copy from the Nix-generated template first. NixOS activation
+          # (triggered by nixos-upgrade) overwrites /etc/openclaw/openclaw.json with
+          # the placeholder via environment.etc, clobbering the injected token.
+          # Copying from the store path makes this idempotent regardless of disk state.
           execStartPre = [
             "+${pkgs.writeShellScript "openclaw-inject-secrets" ''
+              cp ${config.environment.etc."openclaw/openclaw.json".source} /etc/openclaw/openclaw.json
+              chmod 0644 /etc/openclaw/openclaw.json
               ${pkgs.gnused}/bin/sed -i \
                 "s|__DISCORD_BOT_TOKEN__|$(cat ${config.age.secrets.discord-bot-token.path})|" \
                 /etc/openclaw/openclaw.json
