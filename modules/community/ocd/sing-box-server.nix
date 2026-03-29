@@ -47,6 +47,12 @@
         };
       };
 
+      # Ensure /run/sing-box exists. RuntimeDirectory should handle this
+      # but fails on some EC2 environments.
+      systemd.tmpfiles.rules = [
+        "d /run/sing-box 0700 sing-box sing-box -"
+      ];
+
       # Open TCP 443 in the NixOS firewall
       networking.firewall.allowedTCPPorts = [ 443 ];
     };
