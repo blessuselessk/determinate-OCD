@@ -9,6 +9,7 @@
   "tagOwners": {
     "tag:gateway": ["group:admins"],
     "tag:client":  ["group:admins"],
+    "tag:runner":  ["group:admins"],
   },
 
   "acls": [
@@ -32,6 +33,27 @@
       "src":    ["tag:gateway"],
       "dst":    ["tag:client:*"],
     },
+
+    // Runners can reach the gateway (pull work, report results)
+    {
+      "action": "accept",
+      "src":    ["tag:runner"],
+      "dst":    ["tag:gateway:18789"],
+    },
+
+    // Runners can reach each other (batch coordination)
+    {
+      "action": "accept",
+      "src":    ["tag:runner"],
+      "dst":    ["tag:runner:*"],
+    },
+
+    // Admins can SSH into runners
+    {
+      "action": "accept",
+      "src":    ["group:admins"],
+      "dst":    ["tag:runner:*"],
+    },
   ],
 
   // SSH access via Tailscale SSH (optional — if you enable tailscale SSH)
@@ -40,6 +62,12 @@
       "action": "accept",
       "src":    ["group:admins"],
       "dst":    ["tag:gateway"],
+      "users":  ["root", "lessuseless"],
+    },
+    {
+      "action": "accept",
+      "src":    ["group:admins"],
+      "dst":    ["tag:runner"],
       "users":  ["root", "lessuseless"],
     },
   ],
